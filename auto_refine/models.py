@@ -42,6 +42,7 @@ class TrialRecord:
     decision: str
     improved: bool
     constraint_failures: list[str]
+    artifacts: dict[str, str] = field(default_factory=dict)
     proposer_exit_code: int | None = None
     evaluator_exit_code: int | None = None
     proposer_log: str | None = None

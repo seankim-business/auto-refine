@@ -26,6 +26,7 @@ The same loop can optimize different artifact types without changing the engine:
 
 - **prompt artifact** → `examples/prompt_eval_toy/`
 - **workflow policy artifact** → `examples/routing_policy_toy/`
+- **repo-owned marketing artifact** → `self_tasks/marketing_copy/`
 
 Both examples are:
 - deterministic
@@ -50,7 +51,20 @@ Current live examples are deterministic proof demos, labeled honestly as such.
 ```bash
 python3 -m auto_refine run examples/prompt_eval_toy/task.json --iterations 4
 python3 -m auto_refine run examples/routing_policy_toy/task.json --iterations 4
+python3 -m auto_refine run self_tasks/marketing_copy/task.json --iterations 4
 ```
+
+## Self-refine this repo
+
+The repo now includes a bounded self-hosting task:
+
+- mutable artifact: `marketing/hero.md`
+- evaluator: `self_tasks/marketing_copy/scripts/evaluate.py`
+- proposer: `self_tasks/marketing_copy/scripts/proposer.py`
+
+This is intentionally narrow: it lets `auto-refine` improve a repo-owned marketing artifact without turning into an unrestricted self-editing system.
+
+When you run it, the winning incumbent is written back to `marketing/hero.md`, and the baseline/trial artifact texts are preserved in `summary.json` for inspection.
 
 ## Core ideas
 
@@ -96,6 +110,7 @@ Included in this repo:
 - generic loop engine
 - constrained keep/discard decision policy
 - file snapshot rollback
+- artifact text snapshots in `summary.json`
 - ledger + Markdown report generation
 - deterministic proof examples
 - unit + integration tests

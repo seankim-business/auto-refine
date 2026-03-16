@@ -1,0 +1,1 @@
+auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.

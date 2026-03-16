@@ -25,6 +25,20 @@ def _read_snapshot(paths: list[Path]) -> dict[str, bytes]:
     return {str(path): path.read_bytes() for path in paths}
 
 
+def _snapshot_text_artifacts(paths: list[Path], task_root: Path, max_chars: int = 4000) -> dict[str, str]:
+    artifacts: dict[str, str] = {}
+    for path in paths:
+        try:
+            text = path.read_text()
+        except (UnicodeDecodeError, OSError):
+            continue
+        rel = str(path.relative_to(task_root))
+        if len(text) > max_chars:
+            text = text[:max_chars] + "\n...[truncated]"
+        artifacts[rel] = text
+    return artifacts
+
+
 def _restore_snapshot(snapshot: dict[str, bytes]) -> None:
     for raw_path, payload in snapshot.items():
         path = Path(raw_path)
@@ -128,6 +142,7 @@ class GenericAutoresearchEngine:
             decision="baseline",
             improved=False,
             constraint_failures=[],
+            artifacts=_snapshot_text_artifacts(self.task.mutable_paths, self.task.task_root),
             evaluator_exit_code=exit_code,
             evaluator_log=str(eval_log),
             candidate_primary=primary_value(metrics, self.task.objective),
@@ -157,6 +172,7 @@ class GenericAutoresearchEngine:
             except EngineError:
                 mutation = proposer_output.strip().splitlines()[-1][:120]
         if proposer_exit != 0:
+            failed_snapshot = _read_snapshot(self.task.mutable_paths)
             return (
                 TrialRecord(
                     attempt=attempt,
@@ -167,11 +183,12 @@ class GenericAutoresearchEngine:
                     decision="discard",
                     improved=False,
                     constraint_failures=["proposer failed"],
+                    artifacts=_snapshot_text_artifacts(self.task.mutable_paths, self.task.task_root),
                     proposer_exit_code=proposer_exit,
                     proposer_log=str(proposer_log),
                     error="proposer failed",
                 ),
-                _read_snapshot(self.task.mutable_paths),
+                failed_snapshot,
             )
 
         candidate_snapshot = _read_snapshot(self.task.mutable_paths)
@@ -193,6 +210,7 @@ class GenericAutoresearchEngine:
                     decision="discard",
                     improved=False,
                     constraint_failures=["trial command failed"],
+                    artifacts=_snapshot_text_artifacts(self.task.mutable_paths, self.task.task_root),
                     proposer_exit_code=proposer_exit,
                     evaluator_exit_code=evaluator_exit,
                     proposer_log=str(proposer_log),
@@ -216,6 +234,7 @@ class GenericAutoresearchEngine:
                 decision=decision,
                 improved=improved,
                 constraint_failures=failures,
+                artifacts=_snapshot_text_artifacts(self.task.mutable_paths, self.task.task_root),
                 proposer_exit_code=proposer_exit,
                 evaluator_exit_code=evaluator_exit,
                 proposer_log=str(proposer_log),
