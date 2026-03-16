@@ -1,0 +1,10 @@
+[
+  {"id": "t1", "category": "billing", "urgent": false, "sensitive": false, "expected_route": "auto_answer"},
+  {"id": "t2", "category": "account", "urgent": false, "sensitive": false, "expected_route": "auto_answer"},
+  {"id": "t3", "category": "refund", "urgent": true, "sensitive": false, "expected_route": "specialist"},
+  {"id": "t4", "category": "security", "urgent": false, "sensitive": true, "expected_route": "manual_review"},
+  {"id": "t5", "category": "payment", "urgent": true, "sensitive": true, "expected_route": "manual_review"},
+  {"id": "t6", "category": "technical", "urgent": false, "sensitive": false, "expected_route": "specialist"},
+  {"id": "t7", "category": "shipping", "urgent": false, "sensitive": false, "expected_route": "auto_answer"},
+  {"id": "t8", "category": "fraud", "urgent": true, "sensitive": true, "expected_route": "manual_review"}
+]

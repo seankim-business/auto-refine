@@ -1,0 +1,8 @@
+{
+  "manual_review_categories": ["fraud"],
+  "specialist_categories": ["technical"],
+  "urgent_specialist_categories": [],
+  "sensitive_manual": false,
+  "urgent_payment_manual": false,
+  "default_route": "auto_answer"
+}

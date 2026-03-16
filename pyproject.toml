@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auto-refine"
+version = "0.1.0"
+description = "Benchmark-driven autonomous optimization for bounded systems"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Sean Kim + OpenClaw" }
+]
+license = { text = "MIT" }
+keywords = ["autonomous", "optimization", "eval", "prompt", "workflow"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13"
+]
+
+[project.scripts]
+auto-refine = "auto_refine.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["auto_refine*"]
