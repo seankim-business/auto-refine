@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>auto-refine demo</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #111831;
+        --panel-2: #18213f;
+        --text: #ecf2ff;
+        --muted: #9eb0d1;
+        --accent: #7dd3fc;
+        --accent-2: #a78bfa;
+        --keep: #34d399;
+        --discard: #f87171;
+        --baseline: #fbbf24;
+        --border: rgba(255,255,255,0.08);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #09101d 0%, #0f172a 100%);
+        color: var(--text);
+      }
+
+      a { color: var(--accent); }
+      .wrap { width: min(1160px, calc(100vw - 32px)); margin: 0 auto; }
+      .hero {
+        padding: 56px 0 24px;
+      }
+      .eyebrow {
+        display: inline-flex;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(125, 211, 252, 0.08);
+        color: var(--accent);
+        font-size: 13px;
+        letter-spacing: 0.02em;
+      }
+      h1 {
+        font-size: clamp(32px, 5vw, 60px);
+        line-height: 1.02;
+        margin: 18px 0 14px;
+      }
+      .sub {
+        max-width: 760px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      .hero-actions {
+        margin-top: 22px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        font-weight: 600;
+      }
+      .button.primary {
+        background: linear-gradient(135deg, rgba(125, 211, 252, 0.18), rgba(167, 139, 250, 0.18));
+      }
+      .section {
+        padding: 16px 0 28px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .card {
+        background: rgba(17, 24, 49, 0.86);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 14px 50px rgba(0,0,0,0.24);
+      }
+      .mini-label {
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 12px;
+      }
+      .metric {
+        font-size: 28px;
+        margin-top: 8px;
+        font-weight: 700;
+      }
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .pipeline .step {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 14px;
+        min-height: 94px;
+      }
+      .step-num {
+        color: var(--accent-2);
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .example {
+        margin-top: 18px;
+      }
+      .example-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid var(--border);
+      }
+      .badge.keep { background: rgba(52, 211, 153, 0.12); color: var(--keep); }
+      .badge.discard { background: rgba(248, 113, 113, 0.12); color: var(--discard); }
+      .badge.baseline { background: rgba(251, 191, 36, 0.12); color: var(--baseline); }
+      .example-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 16px;
+        margin-top: 16px;
+      }
+      .chart-box {
+        padding: 16px;
+        background: var(--panel-2);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+      }
+      .records {
+        display: grid;
+        gap: 10px;
+      }
+      .record {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: rgba(255,255,255,0.02);
+      }
+      .record-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .record-mutation {
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 14px;
+      }
+      .kv {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .kv div {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .kv strong {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .constraints {
+        margin-top: 10px;
+        color: #fecaca;
+        font-size: 13px;
+      }
+      .footer {
+        color: var(--muted);
+        font-size: 14px;
+        padding: 16px 0 48px;
+      }
+      svg text { fill: var(--muted); font-size: 12px; }
+      @media (max-width: 980px) {
+        .grid, .pipeline, .example-grid, .kv { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 700px) {
+        .grid, .pipeline, .example-grid, .kv { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="hero">
+        <span class="eyebrow">auto-refine · benchmark-driven bounded optimization</span>
+        <h1>See optimization happen, not just the final result.</h1>
+        <p class="sub">
+          This demo shows the same core loop optimizing two different artifact types:
+          a prompt and a workflow policy. Good candidates are kept. Expensive or unsafe ones are rejected.
+          Discarded candidates are rolled back automatically.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://github.com/seankim-business/auto-refine">View GitHub repo</a>
+          <a class="button" href="https://github.com/seankim-business/auto-refine#quick-start">Quick start</a>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="grid">
+          <div class="card">
+            <div class="mini-label">Core idea</div>
+            <div class="metric">bounded mutation</div>
+          </div>
+          <div class="card">
+            <div class="mini-label">Judge</div>
+            <div class="metric">metric + constraints</div>
+          </div>
+          <div class="card">
+            <div class="mini-label">Failure mode</div>
+            <div class="metric">discard + rollback</div>
+          </div>
+          <div class="card">
+            <div class="mini-label">Artifact types</div>
+            <div class="metric">prompt / policy</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="pipeline">
+          <div class="step"><div class="step-num">01</div><strong>Baseline</strong><p>Score the current incumbent first.</p></div>
+          <div class="step"><div class="step-num">02</div><strong>Propose</strong><p>Generate one bounded mutation.</p></div>
+          <div class="step"><div class="step-num">03</div><strong>Evaluate</strong><p>Run the trial command and collect metrics.</p></div>
+          <div class="step"><div class="step-num">04</div><strong>Check constraints</strong><p>Reject expensive, slow, or unsafe variants.</p></div>
+          <div class="step"><div class="step-num">05</div><strong>Keep / discard</strong><p>Only keep strict improvements.</p></div>
+          <div class="step"><div class="step-num">06</div><strong>Ledger</strong><p>Write report, reasons, and best incumbent.</p></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div id="examples"></div>
+      </section>
+
+      <section class="footer">
+        Built from deterministic example data in <code>docs/demo-data.json</code>. For real tasks, the same UI can be fed from run summaries.
+      </section>
+    </div>
+
+    <script>
+      const colors = {
+        baseline: '#fbbf24',
+        keep: '#34d399',
+        discard: '#f87171'
+      };
+
+      function renderChart(points) {
+        const w = 520;
+        const h = 220;
+        const pad = 28;
+        const max = 1;
+        const stepX = (w - pad * 2) / Math.max(points.length - 1, 1);
+        const toY = (value) => h - pad - value * (h - pad * 2) / max;
+        const polyline = points.map((v, i) => `${pad + i * stepX},${toY(v)}`).join(' ');
+
+        const labels = points.map((_, i) => {
+          const x = pad + i * stepX;
+          return `<text x="${x}" y="${h - 8}" text-anchor="middle">${i === 0 ? 'base' : i}</text>`;
+        }).join('');
+
+        const dots = points.map((v, i) => {
+          const x = pad + i * stepX;
+          const y = toY(v);
+          return `<circle cx="${x}" cy="${y}" r="5" fill="#7dd3fc"></circle>`;
+        }).join('');
+
+        return `
+          <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="incumbent progression chart">
+            <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="rgba(255,255,255,0.15)"></line>
+            <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="rgba(255,255,255,0.15)"></line>
+            <polyline fill="none" stroke="#7dd3fc" stroke-width="3" points="${polyline}"></polyline>
+            ${dots}
+            ${labels}
+            <text x="12" y="${pad+4}">1.0</text>
+            <text x="12" y="${h-pad+4}">0.0</text>
+          </svg>
+        `;
+      }
+
+      function badge(decision) {
+        const cls = decision === 'keep' ? 'keep' : decision === 'discard' ? 'discard' : 'baseline';
+        return `<span class="badge ${cls}">${decision.toUpperCase()}</span>`;
+      }
+
+      function recordCard(record, primaryMetric) {
+        const metrics = record.metrics || {};
+        const failures = record.constraintFailures && record.constraintFailures.length
+          ? `<div class="constraints"><strong>Constraint failure:</strong> ${record.constraintFailures.join(' · ')}</div>`
+          : '';
+        return `
+          <div class="record">
+            <div class="record-top">
+              <strong>${record.name}</strong>
+              ${badge(record.decision)}
+            </div>
+            <div class="record-mutation">${record.mutation}</div>
+            <div class="kv">
+              <div><strong>${primaryMetric}</strong>${metrics[primaryMetric] ?? '—'}</div>
+              <div><strong>latency_ms</strong>${metrics.latency_ms ?? '—'}</div>
+              <div><strong>cost_usd</strong>${metrics.cost_usd ?? '—'}</div>
+              <div><strong>safety_failures</strong>${metrics.safety_failures ?? '—'}</div>
+            </div>
+            ${failures}
+          </div>
+        `;
+      }
+
+      function renderExample(example) {
+        const kept = example.records.filter(r => r.decision === 'keep').length;
+        const discarded = example.records.filter(r => r.decision === 'discard').length;
+        return `
+          <article class="card example">
+            <div class="example-head">
+              <div>
+                <div class="mini-label">${example.artifactType}</div>
+                <h2 style="margin: 8px 0 10px; font-size: 28px;">${example.title}</h2>
+                <p style="color: var(--muted); margin: 0; max-width: 720px; line-height: 1.6;">${example.objectiveSummary}</p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <span class="badge baseline">baseline + ${example.records.length - 1} trials</span>
+                <span class="badge keep">${kept} kept</span>
+                <span class="badge discard">${discarded} discarded</span>
+              </div>
+            </div>
+            <div class="example-grid">
+              <div class="chart-box">
+                <div class="mini-label">Incumbent progression</div>
+                <div style="margin-top:8px; color: var(--muted); font-size: 14px;">Primary metric stays flat on discarded candidates and only advances on accepted improvements.</div>
+                <div style="margin-top: 12px;">${renderChart(example.incumbentProgression)}</div>
+              </div>
+              <div class="chart-box">
+                <div class="mini-label">Optimization summary</div>
+                <div style="margin-top: 12px; display:grid; gap:10px;">
+                  <div><strong>Primary metric</strong><div style="color: var(--muted); margin-top: 4px;">${example.primaryMetric} (${example.direction})</div></div>
+                  <div><strong>Best run</strong><div style="color: var(--muted); margin-top: 4px;">${example.records.find(r => r.decision === 'keep')?.name || 'none'} → ${example.records.find(r => r.decision === 'keep')?.metrics?.[example.primaryMetric] ?? '—'}</div></div>
+                  <div><strong>Why discards matter</strong><div style="color: var(--muted); margin-top: 4px;">The engine rejects candidates that are slower, costlier, or unsafe even if they look superficially better.</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="records" style="margin-top: 16px;">
+              ${example.records.map((record) => recordCard(record, example.primaryMetric)).join('')}
+            </div>
+          </article>
+        `;
+      }
+
+      async function main() {
+        const res = await fetch('./demo-data.json');
+        const data = await res.json();
+        document.title = data.site.title;
+        document.querySelector('h1').insertAdjacentHTML('afterend', '');
+        const container = document.getElementById('examples');
+        container.innerHTML = data.examples.map(renderExample).join('');
+      }
+
+      main().catch((err) => {
+        document.getElementById('examples').innerHTML = `<div class="card"><strong>Failed to load demo data.</strong><pre>${String(err)}</pre></div>`;
+      });
+    </script>
+  </body>
+</html>

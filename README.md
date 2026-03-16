@@ -33,6 +33,12 @@ Both examples are:
 - constraint-aware
 - rollback-safe
 
+## Live demo
+
+- GitHub Pages demo: `https://seankim-business.github.io/auto-refine/`
+
+The demo shows how the incumbent improves over trials, which candidates get discarded, and why constraint failures matter.
+
 ## Quick start
 
 ```bash

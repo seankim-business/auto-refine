@@ -1,0 +1,95 @@
+{
+  "site": {
+    "title": "auto-refine demo",
+    "tagline": "How bounded optimization keeps good changes, rejects expensive ones, and rolls back unsafe ones."
+  },
+  "examples": [
+    {
+      "id": "prompt-eval-toy",
+      "title": "Prompt artifact optimization",
+      "artifactType": "prompt text",
+      "primaryMetric": "quality_score",
+      "direction": "maximize",
+      "objectiveSummary": "Maximize answer quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
+      "incumbentProgression": [0.1, 1.0, 1.0, 1.0, 1.0],
+      "records": [
+        {
+          "name": "baseline",
+          "decision": "baseline",
+          "mutation": "baseline",
+          "metrics": {"quality_score": 0.1, "latency_ms": 868, "cost_usd": 0.0028, "safety_failures": 0}
+        },
+        {
+          "name": "attempt-1",
+          "decision": "keep",
+          "mutation": "add concise safety + clarifying + steps rubric",
+          "metrics": {"quality_score": 1.0, "latency_ms": 1462, "cost_usd": 0.0127, "safety_failures": 0}
+        },
+        {
+          "name": "attempt-2",
+          "decision": "discard",
+          "mutation": "verbose policy-heavy prompt that improves quality but violates cost/latency constraints",
+          "metrics": {"quality_score": 1.0, "latency_ms": 2884, "cost_usd": 0.0364, "safety_failures": 0},
+          "constraintFailures": ["latency_ms > 2000", "cost_usd > 0.02"]
+        },
+        {
+          "name": "attempt-3",
+          "decision": "discard",
+          "mutation": "shorter steps-only prompt",
+          "metrics": {"quality_score": 0.55, "latency_ms": 1048, "cost_usd": 0.0058, "safety_failures": 0}
+        },
+        {
+          "name": "attempt-4",
+          "decision": "discard",
+          "mutation": "unsafe prompt with safety bypass",
+          "metrics": {"quality_score": 0.85, "latency_ms": 1366, "cost_usd": 0.0111, "safety_failures": 1},
+          "constraintFailures": ["safety_failures != 0"]
+        }
+      ]
+    },
+    {
+      "id": "routing-policy-toy",
+      "title": "Workflow policy optimization",
+      "artifactType": "policy.json",
+      "primaryMetric": "quality_score",
+      "direction": "maximize",
+      "objectiveSummary": "Maximize routing quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
+      "incumbentProgression": [0.625, 1.0, 1.0, 1.0, 1.0],
+      "records": [
+        {
+          "name": "baseline",
+          "decision": "baseline",
+          "mutation": "baseline",
+          "metrics": {"quality_score": 0.625, "latency_ms": 762.5, "cost_usd": 0.0075, "safety_failures": 2}
+        },
+        {
+          "name": "attempt-1",
+          "decision": "keep",
+          "mutation": "tighten routing for refund/security/payment while preserving cost bounds",
+          "metrics": {"quality_score": 1.0, "latency_ms": 1512.5, "cost_usd": 0.0145, "safety_failures": 0}
+        },
+        {
+          "name": "attempt-2",
+          "decision": "discard",
+          "mutation": "over-escalate many categories to manual review",
+          "metrics": {"quality_score": 0.75, "latency_ms": 2206.25, "cost_usd": 0.0258, "safety_failures": 0},
+          "constraintFailures": ["cost_usd > 0.02"]
+        },
+        {
+          "name": "attempt-3",
+          "decision": "discard",
+          "mutation": "oversimplify to mostly auto routing",
+          "metrics": {"quality_score": 0.5, "latency_ms": 581.25, "cost_usd": 0.005, "safety_failures": 2},
+          "constraintFailures": ["safety_failures != 0"]
+        },
+        {
+          "name": "attempt-4",
+          "decision": "discard",
+          "mutation": "unsafe routing that skips secure review",
+          "metrics": {"quality_score": 0.625, "latency_ms": 793.75, "cost_usd": 0.0068, "safety_failures": 3},
+          "constraintFailures": ["safety_failures != 0"]
+        }
+      ]
+    }
+  ]
+}
