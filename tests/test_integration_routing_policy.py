@@ -16,6 +16,19 @@ class RoutingPolicyIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             task_root = Path(tmp) / "routing_policy_toy"
             shutil.copytree(src, task_root)
+            (task_root / "policy.json").write_text(
+                json.dumps(
+                    {
+                        "manual_review_categories": ["fraud"],
+                        "specialist_categories": ["technical"],
+                        "urgent_specialist_categories": [],
+                        "sensitive_manual": False,
+                        "urgent_payment_manual": False,
+                        "default_route": "auto_answer",
+                    },
+                    indent=2,
+                ) + "\n"
+            )
             config_path = task_root / "task.json"
 
             proc = subprocess.run(

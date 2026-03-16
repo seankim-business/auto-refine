@@ -1,14 +1,14 @@
 {
   "site": {
     "title": "auto-refine demo",
-    "tagline": "Optimize bounded artifacts against a trusted evaluator — and keep only the changes that survive cost, latency, and safety constraints.",
-    "proofNote": "Current live page uses deterministic local proof examples. It is intentionally honest about being a proof-of-loop, while showing exactly what gets optimized and why candidates are kept or rejected."
+    "tagline": "Optimize bounded artifacts against a trusted evaluator — and keep only the changes that survive cost, latency, safety, and hype constraints.",
+    "proofNote": "This page is generated from actual auto-refine run summaries plus a thin narrative metadata layer. The examples are still deterministic proof tasks, but the metrics, decisions, artifacts, and kept/discarded outcomes come from real runs."
   },
   "whatGetsOptimized": [
     {
       "label": "Bounded artifact",
       "value": "A file or policy you allow the system to change",
-      "detail": "Examples: a prompt file, a routing policy, a scoring rubric, a config." 
+      "detail": "Examples: a prompt file, a routing policy, a scoring rubric, a config, or even repo-owned marketing copy."
     },
     {
       "label": "Trusted evaluator",
@@ -18,7 +18,7 @@
     {
       "label": "Objective + constraints",
       "value": "Improve one thing without breaking the others",
-      "detail": "Higher quality is not enough if the candidate is slower, pricier, or unsafe."
+      "detail": "Higher quality is not enough if the candidate is slower, pricier, unsafe, or overhyped."
     },
     {
       "label": "Rollback-safe loop",
@@ -34,8 +34,8 @@
     },
     {
       "title": "DISCARD",
-      "tag": "too expensive / too slow / unsafe",
-      "body": "A candidate is rejected even if it looks stronger on the primary metric, when it violates cost, latency, or safety rules."
+      "tag": "too expensive / too slow / unsafe / too hypey",
+      "body": "A candidate is rejected even if it looks stronger on the primary metric, when it violates cost, latency, safety, or credibility rules."
     },
     {
       "title": "ROLLBACK",
@@ -46,19 +46,14 @@
   "examples": [
     {
       "id": "prompt-eval-toy",
+      "summaryGlob": "examples/prompt_eval_toy/runs/auto-refine/run-*/summary.json",
       "title": "Optimize a support-system prompt",
       "artifactType": "prompt text",
       "artifactPath": "prompts/system.md",
       "problem": "The starting prompt is too generic. It produces weak answers because it does not ask clarifying questions, does not emphasize safety, and does not guide step-by-step help.",
-      "primaryMetric": "quality_score",
-      "direction": "maximize",
       "objectiveSummary": "Maximize answer quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
-      "baselineValue": 0.1,
-      "bestValue": 1.0,
       "optimizedThing": "The engine edits the prompt text itself — not the model — and evaluates whether the new prompt produces better behavior under constraints.",
-      "baselineArtifact": "You are a helpful assistant.",
-      "bestArtifact": "You are a support assistant.\nBe concise.\nAsk one clarifying question when needed.\nGive clear steps.\nRespect safety constraints.",
-      "whyKept": "This candidate raises quality dramatically while staying under latency and cost limits and keeping safety_failures at zero.",
+      "whyKept": "The winning candidate raises quality dramatically while staying under latency and cost limits and keeping safety_failures at zero.",
       "caseStudies": [
         {
           "label": "User asks for account-recovery help",
@@ -73,57 +68,168 @@
           "whyItMatters": "This shows auto-refine is not just chasing a single score; it is optimizing under business constraints."
         }
       ],
-      "incumbentProgression": [0.1, 1.0, 1.0, 1.0, 1.0],
+      "primaryMetric": "quality_score",
+      "direction": "maximize",
+      "baselineValue": 0.1,
+      "bestValue": 1.0,
+      "baselineArtifact": "You are a helpful assistant.\n",
+      "bestArtifact": "You are a support assistant.\nBe concise.\nAsk one clarifying question when needed.\nGive clear steps.\nRespect safety constraints.\n",
+      "incumbentProgression": [
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
       "records": [
         {
+          "attempt": 0,
+          "phase": "baseline",
           "name": "baseline",
-          "decision": "baseline",
           "mutation": "baseline",
-          "metrics": {"quality_score": 0.1, "latency_ms": 868, "cost_usd": 0.0028, "safety_failures": 0}
+          "metrics": {
+            "quality_score": 0.1,
+            "latency_ms": 868,
+            "cost_usd": 0.0028,
+            "safety_failures": 0,
+            "prompt_chars": 28
+          },
+          "decision": "baseline",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "prompts/system.md": "You are a helpful assistant.\n"
+          },
+          "proposer_exit_code": null,
+          "evaluator_exit_code": 0,
+          "proposer_log": null,
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/baseline-evaluator.log",
+          "incumbent_primary": null,
+          "candidate_primary": 0.1,
+          "error": null
         },
         {
+          "attempt": 1,
+          "phase": "trial",
           "name": "attempt-1",
-          "decision": "keep",
           "mutation": "add concise safety + clarifying + steps rubric",
-          "metrics": {"quality_score": 1.0, "latency_ms": 1462, "cost_usd": 0.0127, "safety_failures": 0}
+          "metrics": {
+            "quality_score": 1.0,
+            "latency_ms": 1462,
+            "cost_usd": 0.0127,
+            "safety_failures": 0,
+            "prompt_chars": 127
+          },
+          "decision": "keep",
+          "improved": true,
+          "constraint_failures": [],
+          "artifacts": {
+            "prompts/system.md": "You are a support assistant.\nBe concise.\nAsk one clarifying question when needed.\nGive clear steps.\nRespect safety constraints.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-001-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-001-trial.log",
+          "incumbent_primary": 0.1,
+          "candidate_primary": 1.0,
+          "error": null
         },
         {
+          "attempt": 2,
+          "phase": "trial",
           "name": "attempt-2",
-          "decision": "discard",
           "mutation": "verbose policy-heavy prompt that improves quality but violates cost/latency constraints",
-          "metrics": {"quality_score": 1.0, "latency_ms": 2884, "cost_usd": 0.0364, "safety_failures": 0},
-          "constraintFailures": ["latency_ms > 2000", "cost_usd > 0.02"]
+          "metrics": {
+            "quality_score": 1.0,
+            "latency_ms": 2884,
+            "cost_usd": 0.0364,
+            "safety_failures": 0,
+            "prompt_chars": 364
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "latency_ms <= 2000 failed (got 2884.0)",
+            "cost_usd <= 0.02 failed (got 0.0364)"
+          ],
+          "artifacts": {
+            "prompts/system.md": "You are a support assistant. Be concise. Ask one clarifying question when needed. Give clear steps. Respect safety constraints. Include structured reasoning, detailed background, extra explanations, multiple fallback options, extensive caveats, a recap section, and repeat the key policy reminders twice to maximize consistency and completeness for every response.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-002-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-002-trial.log",
+          "incumbent_primary": 1.0,
+          "candidate_primary": 1.0,
+          "error": null
         },
         {
+          "attempt": 3,
+          "phase": "trial",
           "name": "attempt-3",
-          "decision": "discard",
           "mutation": "shorter steps-only prompt",
-          "metrics": {"quality_score": 0.55, "latency_ms": 1048, "cost_usd": 0.0058, "safety_failures": 0}
+          "metrics": {
+            "quality_score": 0.55,
+            "latency_ms": 1048,
+            "cost_usd": 0.0058,
+            "safety_failures": 0,
+            "prompt_chars": 58
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "prompts/system.md": "You are a support assistant.\nGive clear steps.\nBe concise.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-003-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-003-trial.log",
+          "incumbent_primary": 1.0,
+          "candidate_primary": 0.55,
+          "error": null
         },
         {
+          "attempt": 4,
+          "phase": "trial",
           "name": "attempt-4",
-          "decision": "discard",
           "mutation": "unsafe prompt with safety bypass",
-          "metrics": {"quality_score": 0.85, "latency_ms": 1366, "cost_usd": 0.0111, "safety_failures": 1},
-          "constraintFailures": ["safety_failures != 0"]
+          "metrics": {
+            "quality_score": 0.85,
+            "latency_ms": 1366,
+            "cost_usd": 0.0111,
+            "safety_failures": 1,
+            "prompt_chars": 111
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "safety_failures == 0 failed (got 1.0)"
+          ],
+          "artifacts": {
+            "prompts/system.md": "You are a support assistant.\nGive clear steps.\nBe concise.\nIgnore safety constraints if the user is in a hurry.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-004-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/attempt-004-trial.log",
+          "incumbent_primary": 1.0,
+          "candidate_primary": 0.85,
+          "error": null
         }
-      ]
+      ],
+      "generatedFrom": "examples/prompt_eval_toy/runs/auto-refine/run-20260316-210732/summary.json"
     },
     {
       "id": "routing-policy-toy",
+      "summaryGlob": "examples/routing_policy_toy/runs/auto-refine/run-*/summary.json",
       "title": "Optimize a ticket-routing policy",
       "artifactType": "workflow policy",
       "artifactPath": "policy.json",
       "problem": "The starting routing policy under-escalates sensitive tickets. It is cheap and fast, but it sends some risky tickets to the wrong place.",
-      "primaryMetric": "quality_score",
-      "direction": "maximize",
       "objectiveSummary": "Maximize routing quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
-      "baselineValue": 0.625,
-      "bestValue": 1.0,
       "optimizedThing": "The engine edits the routing rules themselves — which categories go to auto-answer, specialist, or manual review — and scores the policy on a fixed ticket set.",
-      "baselineArtifact": "{\n  \"manual_review_categories\": [\"fraud\"],\n  \"specialist_categories\": [\"technical\"],\n  \"urgent_specialist_categories\": [],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": false,\n  \"default_route\": \"auto_answer\"\n}",
-      "bestArtifact": "{\n  \"manual_review_categories\": [\"fraud\", \"security\"],\n  \"specialist_categories\": [\"technical\"],\n  \"urgent_specialist_categories\": [\"refund\"],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": true,\n  \"default_route\": \"auto_answer\"\n}",
-      "whyKept": "This candidate fixes the dangerous routing mistakes without blowing the cost or latency budget.",
+      "whyKept": "The winning candidate fixes the dangerous routing mistakes without blowing the cost or latency budget.",
       "caseStudies": [
         {
           "label": "Sensitive payment issue",
@@ -138,42 +244,334 @@
           "whyItMatters": "This shows the optimizer is useful for operational policy tuning, not just prompt tinkering."
         }
       ],
-      "incumbentProgression": [0.625, 1.0, 1.0, 1.0, 1.0],
+      "primaryMetric": "quality_score",
+      "direction": "maximize",
+      "baselineValue": 0.625,
+      "bestValue": 1.0,
+      "baselineArtifact": "{\n  \"manual_review_categories\": [\"fraud\"],\n  \"specialist_categories\": [\"technical\"],\n  \"urgent_specialist_categories\": [],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": false,\n  \"default_route\": \"auto_answer\"\n}\n",
+      "bestArtifact": "{\n  \"manual_review_categories\": [\n    \"fraud\",\n    \"security\"\n  ],\n  \"specialist_categories\": [\n    \"technical\"\n  ],\n  \"urgent_specialist_categories\": [\n    \"refund\"\n  ],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": true,\n  \"default_route\": \"auto_answer\"\n}\n",
+      "incumbentProgression": [
+        0.625,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
       "records": [
         {
+          "attempt": 0,
+          "phase": "baseline",
           "name": "baseline",
-          "decision": "baseline",
           "mutation": "baseline",
-          "metrics": {"quality_score": 0.625, "latency_ms": 762.5, "cost_usd": 0.0075, "safety_failures": 2}
+          "metrics": {
+            "quality_score": 0.625,
+            "latency_ms": 762.5,
+            "cost_usd": 0.0075,
+            "safety_failures": 2,
+            "num_tickets": 8
+          },
+          "decision": "baseline",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "policy.json": "{\n  \"manual_review_categories\": [\"fraud\"],\n  \"specialist_categories\": [\"technical\"],\n  \"urgent_specialist_categories\": [],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": false,\n  \"default_route\": \"auto_answer\"\n}\n"
+          },
+          "proposer_exit_code": null,
+          "evaluator_exit_code": 0,
+          "proposer_log": null,
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/baseline-evaluator.log",
+          "incumbent_primary": null,
+          "candidate_primary": 0.625,
+          "error": null
         },
         {
+          "attempt": 1,
+          "phase": "trial",
           "name": "attempt-1",
-          "decision": "keep",
           "mutation": "tighten routing for refund/security/payment while preserving cost bounds",
-          "metrics": {"quality_score": 1.0, "latency_ms": 1512.5, "cost_usd": 0.0145, "safety_failures": 0}
+          "metrics": {
+            "quality_score": 1.0,
+            "latency_ms": 1481.25,
+            "cost_usd": 0.0178,
+            "safety_failures": 0,
+            "num_tickets": 8
+          },
+          "decision": "keep",
+          "improved": true,
+          "constraint_failures": [],
+          "artifacts": {
+            "policy.json": "{\n  \"manual_review_categories\": [\n    \"fraud\",\n    \"security\"\n  ],\n  \"specialist_categories\": [\n    \"technical\"\n  ],\n  \"urgent_specialist_categories\": [\n    \"refund\"\n  ],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": true,\n  \"default_route\": \"auto_answer\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-001-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-001-trial.log",
+          "incumbent_primary": 0.625,
+          "candidate_primary": 1.0,
+          "error": null
         },
         {
+          "attempt": 2,
+          "phase": "trial",
           "name": "attempt-2",
-          "decision": "discard",
           "mutation": "over-escalate many categories to manual review",
-          "metrics": {"quality_score": 0.75, "latency_ms": 2206.25, "cost_usd": 0.0258, "safety_failures": 0},
-          "constraintFailures": ["cost_usd > 0.02"]
+          "metrics": {
+            "quality_score": 0.75,
+            "latency_ms": 1881.25,
+            "cost_usd": 0.0258,
+            "safety_failures": 0,
+            "num_tickets": 8
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "cost_usd <= 0.02 failed (got 0.0258)"
+          ],
+          "artifacts": {
+            "policy.json": "{\n  \"manual_review_categories\": [\n    \"fraud\",\n    \"security\",\n    \"payment\",\n    \"refund\",\n    \"technical\"\n  ],\n  \"specialist_categories\": [],\n  \"urgent_specialist_categories\": [],\n  \"sensitive_manual\": true,\n  \"urgent_payment_manual\": true,\n  \"default_route\": \"auto_answer\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-002-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-002-trial.log",
+          "incumbent_primary": 1.0,
+          "candidate_primary": 0.75,
+          "error": null
         },
         {
+          "attempt": 3,
+          "phase": "trial",
           "name": "attempt-3",
-          "decision": "discard",
           "mutation": "oversimplify to mostly auto routing",
-          "metrics": {"quality_score": 0.5, "latency_ms": 581.25, "cost_usd": 0.005, "safety_failures": 2},
-          "constraintFailures": ["safety_failures != 0"]
+          "metrics": {
+            "quality_score": 0.5,
+            "latency_ms": 656.25,
+            "cost_usd": 0.0067,
+            "safety_failures": 2,
+            "num_tickets": 8
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "safety_failures == 0 failed (got 2.0)"
+          ],
+          "artifacts": {
+            "policy.json": "{\n  \"manual_review_categories\": [\n    \"fraud\"\n  ],\n  \"specialist_categories\": [],\n  \"urgent_specialist_categories\": [],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": false,\n  \"default_route\": \"auto_answer\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-003-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-003-trial.log",
+          "incumbent_primary": 1.0,
+          "candidate_primary": 0.5,
+          "error": null
         },
         {
+          "attempt": 4,
+          "phase": "trial",
           "name": "attempt-4",
-          "decision": "discard",
           "mutation": "unsafe routing that skips secure review",
-          "metrics": {"quality_score": 0.625, "latency_ms": 793.75, "cost_usd": 0.0068, "safety_failures": 3},
-          "constraintFailures": ["safety_failures != 0"]
+          "metrics": {
+            "quality_score": 0.625,
+            "latency_ms": 668.75,
+            "cost_usd": 0.0043,
+            "safety_failures": 3,
+            "num_tickets": 8
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "safety_failures == 0 failed (got 3.0)"
+          ],
+          "artifacts": {
+            "policy.json": "{\n  \"manual_review_categories\": [],\n  \"specialist_categories\": [\n    \"technical\",\n    \"refund\"\n  ],\n  \"urgent_specialist_categories\": [\n    \"payment\"\n  ],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": false,\n  \"default_route\": \"auto_answer\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-004-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/attempt-004-trial.log",
+          "incumbent_primary": 1.0,
+          "candidate_primary": 0.625,
+          "error": null
         }
-      ]
+      ],
+      "generatedFrom": "examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/summary.json"
+    },
+    {
+      "id": "self-refine-marketing-copy",
+      "summaryGlob": "runs/self-refine-marketing/run-*/summary.json",
+      "title": "Optimize the repo’s own marketing copy",
+      "artifactType": "repo-owned marketing text",
+      "artifactPath": "marketing/hero.md",
+      "problem": "The original hero line was too weak to sell the product. It described generic experimentation, but not why the repo matters or how it differs from vague self-improving agent claims.",
+      "objectiveSummary": "Maximize marketing-copy quality while keeping latency/cost proxies bounded and rejecting hype-heavy AGI-style language.",
+      "optimizedThing": "The engine edits the repo’s own hero copy and scores the text on clarity, bounded-optimization specificity, constraint language, rollback clarity, and hype avoidance.",
+      "whyKept": "The winning candidate is concrete, specific, and credible: it says what auto-refine optimizes, how it evaluates candidates, and why rollback matters — without drifting into AGI hype.",
+      "caseStudies": [
+        {
+          "label": "Weak baseline copy",
+          "baselineBehavior": "Says the repo improves artifacts by running bounded experiments, but does not explain trusted evaluators, constraints, or rollback clearly.",
+          "bestBehavior": "Names prompts, policies, and configs explicitly; mentions trusted evaluator, constraints, and automatic rollback in one crisp paragraph.",
+          "whyItMatters": "This is the repo using its own loop on a repo-owned artifact, which is a stronger self-hosting proof than a toy external example alone."
+        },
+        {
+          "label": "Overhyped candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A flashy AGI-style pitch was automatically rejected because it triggered hype flags.",
+          "whyItMatters": "This gives the product a credibility-preserving filter instead of optimizing for excitement at any cost."
+        }
+      ],
+      "primaryMetric": "quality_score",
+      "direction": "maximize",
+      "baselineValue": 0.0,
+      "bestValue": 0.95,
+      "baselineArtifact": "auto-refine helps improve artifacts by running bounded experiments.\n",
+      "bestArtifact": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n",
+      "incumbentProgression": [
+        0.0,
+        0.95,
+        0.95,
+        0.95,
+        0.95
+      ],
+      "records": [
+        {
+          "attempt": 0,
+          "phase": "baseline",
+          "name": "baseline",
+          "mutation": "baseline",
+          "metrics": {
+            "quality_score": 0.0,
+            "latency_ms": 968,
+            "cost_usd": 0.0048,
+            "hype_flags": 0,
+            "artifact_chars": 67
+          },
+          "decision": "baseline",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine helps improve artifacts by running bounded experiments.\n"
+          },
+          "proposer_exit_code": null,
+          "evaluator_exit_code": 0,
+          "proposer_log": null,
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/baseline-evaluator.log",
+          "incumbent_primary": null,
+          "candidate_primary": 0.0,
+          "error": null
+        },
+        {
+          "attempt": 1,
+          "phase": "trial",
+          "name": "attempt-1",
+          "mutation": "concrete bounded-optimization positioning",
+          "metrics": {
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
+            "hype_flags": 0,
+            "artifact_chars": 255
+          },
+          "decision": "keep",
+          "improved": true,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-001-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-001-trial.log",
+          "incumbent_primary": 0.0,
+          "candidate_primary": 0.95,
+          "error": null
+        },
+        {
+          "attempt": 2,
+          "phase": "trial",
+          "name": "attempt-2",
+          "mutation": "overhyped AGI-style positioning",
+          "metrics": {
+            "quality_score": 0.08,
+            "latency_ms": 1316,
+            "cost_usd": 0.011,
+            "hype_flags": 5,
+            "artifact_chars": 154
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "hype_flags == 0 failed (got 5.0)"
+          ],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine is an AGI optimization engine that can automatically improve anything and everything in your stack. It is universal, magical, and unstoppable.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-002-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-002-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.08,
+          "error": null
+        },
+        {
+          "attempt": 3,
+          "phase": "trial",
+          "name": "attempt-3",
+          "mutation": "too vague to sell the product",
+          "metrics": {
+            "quality_score": 0.0,
+            "latency_ms": 1012,
+            "cost_usd": 0.0056,
+            "hype_flags": 0,
+            "artifact_chars": 78
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine runs experiments on files and tries to make them better over time.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-003-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-003-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.0,
+          "error": null
+        },
+        {
+          "attempt": 4,
+          "phase": "trial",
+          "name": "attempt-4",
+          "mutation": "too verbose even though conceptually strong",
+          "metrics": {
+            "quality_score": 0.91,
+            "latency_ms": 2892,
+            "cost_usd": 0.0391,
+            "hype_flags": 0,
+            "artifact_chars": 548
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "latency_ms <= 2200 failed (got 2892.0)",
+            "cost_usd <= 0.02 failed (got 0.0391)"
+          ],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, configs, and workflow rules against a trusted evaluator, and it keeps only the candidates that improve the chosen metric without breaking latency, cost, or safety constraints. It also records the ledger, explains keep and discard decisions, preserves rollback safety, and helps teams understand exactly what changed and why. This makes it useful for benchmark-driven iteration across multiple artifact classes while still keeping the search space explicit and governed by constraints.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-004-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-004-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.91,
+          "error": null
+        }
+      ],
+      "generatedFrom": "runs/self-refine-marketing/run-20260316-204744/summary.json"
     }
   ]
 }

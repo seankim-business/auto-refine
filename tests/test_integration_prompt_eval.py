@@ -16,6 +16,7 @@ class PromptEvalIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             task_root = Path(tmp) / "prompt_eval_toy"
             shutil.copytree(src, task_root)
+            (task_root / "prompts" / "system.md").write_text("You are a helpful assistant.\n")
             config_path = task_root / "task.json"
 
             proc = subprocess.run(

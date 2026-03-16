@@ -19,6 +19,9 @@ class SelfRefineMarketingIntegrationTests(unittest.TestCase):
             shutil.copytree(repo_root / "marketing", task_root / "marketing")
             shutil.copy2(repo_root / "README.md", task_root / "README.md")
             shutil.copy2(repo_root / ".gitignore", task_root / ".gitignore")
+            (task_root / "marketing" / "hero.md").write_text(
+                "auto-refine helps improve artifacts by running bounded experiments.\n"
+            )
             config_path = task_root / "self_tasks" / "marketing_copy" / "task.json"
 
             proc = subprocess.run(

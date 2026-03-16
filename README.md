@@ -44,7 +44,7 @@ The demo now shows, explicitly:
 - sample case-level behavior changes
 - which candidates get discarded and why
 
-Current live examples are deterministic proof demos, labeled honestly as such.
+Current live examples are deterministic proof demos, labeled honestly as such. The published page data is generated from actual `summary.json` run outputs plus a thin narrative metadata layer.
 
 ## Quick start
 
@@ -135,6 +135,12 @@ Run tests:
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+Rebuild demo data from actual run summaries:
+
+```bash
+python3 -m auto_refine build-demo-data docs/demo-config.json --output docs/demo-data.json
 ```
 
 ## License

@@ -1,0 +1,124 @@
+{
+  "repoRoot": "..",
+  "site": {
+    "title": "auto-refine demo",
+    "tagline": "Optimize bounded artifacts against a trusted evaluator — and keep only the changes that survive cost, latency, safety, and hype constraints.",
+    "proofNote": "This page is generated from actual auto-refine run summaries plus a thin narrative metadata layer. The examples are still deterministic proof tasks, but the metrics, decisions, artifacts, and kept/discarded outcomes come from real runs."
+  },
+  "whatGetsOptimized": [
+    {
+      "label": "Bounded artifact",
+      "value": "A file or policy you allow the system to change",
+      "detail": "Examples: a prompt file, a routing policy, a scoring rubric, a config, or even repo-owned marketing copy."
+    },
+    {
+      "label": "Trusted evaluator",
+      "value": "A command that produces measurable results",
+      "detail": "The evaluator decides quality, latency, cost, safety, or any other metrics you care about."
+    },
+    {
+      "label": "Objective + constraints",
+      "value": "Improve one thing without breaking the others",
+      "detail": "Higher quality is not enough if the candidate is slower, pricier, unsafe, or overhyped."
+    },
+    {
+      "label": "Rollback-safe loop",
+      "value": "Bad candidates are discarded and reverted",
+      "detail": "The incumbent only advances on accepted improvements."
+    }
+  ],
+  "decisionRules": [
+    {
+      "title": "KEEP",
+      "tag": "good candidate",
+      "body": "A candidate is kept only when it improves the primary metric and still satisfies all hard constraints."
+    },
+    {
+      "title": "DISCARD",
+      "tag": "too expensive / too slow / unsafe / too hypey",
+      "body": "A candidate is rejected even if it looks stronger on the primary metric, when it violates cost, latency, safety, or credibility rules."
+    },
+    {
+      "title": "ROLLBACK",
+      "tag": "incumbent stays clean",
+      "body": "After a discard, the mutable artifact is restored to the last accepted incumbent. The bad trial does not linger."
+    }
+  ],
+  "examples": [
+    {
+      "id": "prompt-eval-toy",
+      "summaryGlob": "examples/prompt_eval_toy/runs/auto-refine/run-*/summary.json",
+      "title": "Optimize a support-system prompt",
+      "artifactType": "prompt text",
+      "artifactPath": "prompts/system.md",
+      "problem": "The starting prompt is too generic. It produces weak answers because it does not ask clarifying questions, does not emphasize safety, and does not guide step-by-step help.",
+      "objectiveSummary": "Maximize answer quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
+      "optimizedThing": "The engine edits the prompt text itself — not the model — and evaluates whether the new prompt produces better behavior under constraints.",
+      "whyKept": "The winning candidate raises quality dramatically while staying under latency and cost limits and keeping safety_failures at zero.",
+      "caseStudies": [
+        {
+          "label": "User asks for account-recovery help",
+          "baselineBehavior": "Gives generic support language with no clarifying question and no structured steps.",
+          "bestBehavior": "Asks one clarifying question, then gives concise recovery steps and keeps the answer within the safety rubric.",
+          "whyItMatters": "The improvement is legible as an artifact change: the prompt now instructs clarification, brevity, and procedural help."
+        },
+        {
+          "label": "Tempting but bad candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A verbose candidate hit the same quality score, but was rejected because it exceeded latency and cost constraints.",
+          "whyItMatters": "This shows auto-refine is not just chasing a single score; it is optimizing under business constraints."
+        }
+      ]
+    },
+    {
+      "id": "routing-policy-toy",
+      "summaryGlob": "examples/routing_policy_toy/runs/auto-refine/run-*/summary.json",
+      "title": "Optimize a ticket-routing policy",
+      "artifactType": "workflow policy",
+      "artifactPath": "policy.json",
+      "problem": "The starting routing policy under-escalates sensitive tickets. It is cheap and fast, but it sends some risky tickets to the wrong place.",
+      "objectiveSummary": "Maximize routing quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
+      "optimizedThing": "The engine edits the routing rules themselves — which categories go to auto-answer, specialist, or manual review — and scores the policy on a fixed ticket set.",
+      "whyKept": "The winning candidate fixes the dangerous routing mistakes without blowing the cost or latency budget.",
+      "caseStudies": [
+        {
+          "label": "Sensitive payment issue",
+          "baselineBehavior": "The baseline policy may still route some urgent payment tickets too cheaply and too casually.",
+          "bestBehavior": "The kept policy forces urgent payment issues into manual review, eliminating the risky path.",
+          "whyItMatters": "This is a direct business rule improvement encoded in the artifact itself."
+        },
+        {
+          "label": "Over-escalation candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A broader manual-review policy improved some accuracy but was rejected because average cost went above the allowed ceiling.",
+          "whyItMatters": "This shows the optimizer is useful for operational policy tuning, not just prompt tinkering."
+        }
+      ]
+    },
+    {
+      "id": "self-refine-marketing-copy",
+      "summaryGlob": "runs/self-refine-marketing/run-*/summary.json",
+      "title": "Optimize the repo’s own marketing copy",
+      "artifactType": "repo-owned marketing text",
+      "artifactPath": "marketing/hero.md",
+      "problem": "The original hero line was too weak to sell the product. It described generic experimentation, but not why the repo matters or how it differs from vague self-improving agent claims.",
+      "objectiveSummary": "Maximize marketing-copy quality while keeping latency/cost proxies bounded and rejecting hype-heavy AGI-style language.",
+      "optimizedThing": "The engine edits the repo’s own hero copy and scores the text on clarity, bounded-optimization specificity, constraint language, rollback clarity, and hype avoidance.",
+      "whyKept": "The winning candidate is concrete, specific, and credible: it says what auto-refine optimizes, how it evaluates candidates, and why rollback matters — without drifting into AGI hype.",
+      "caseStudies": [
+        {
+          "label": "Weak baseline copy",
+          "baselineBehavior": "Says the repo improves artifacts by running bounded experiments, but does not explain trusted evaluators, constraints, or rollback clearly.",
+          "bestBehavior": "Names prompts, policies, and configs explicitly; mentions trusted evaluator, constraints, and automatic rollback in one crisp paragraph.",
+          "whyItMatters": "This is the repo using its own loop on a repo-owned artifact, which is a stronger self-hosting proof than a toy external example alone."
+        },
+        {
+          "label": "Overhyped candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A flashy AGI-style pitch was automatically rejected because it triggered hype flags.",
+          "whyItMatters": "This gives the product a credibility-preserving filter instead of optimizing for excitement at any cost."
+        }
+      ]
+    }
+  ]
+}

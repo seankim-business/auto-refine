@@ -391,12 +391,19 @@
       }
 
       function renderMetrics(metrics, primaryMetric) {
+        const hidden = new Set(['prompt_chars', 'artifact_chars', 'num_tickets']);
+        const preferred = [primaryMetric, 'latency_ms', 'cost_usd', 'safety_failures', 'hype_flags'];
+        const ordered = [];
+        for (const key of preferred) {
+          if (key in metrics && !hidden.has(key) && !ordered.includes(key)) ordered.push(key);
+        }
+        for (const key of Object.keys(metrics)) {
+          if (!hidden.has(key) && !ordered.includes(key)) ordered.push(key);
+        }
+        const keys = ordered.slice(0, 4);
         return `
           <div class="metrics">
-            <div class="metric-box"><strong>${primaryMetric}</strong>${metrics[primaryMetric] ?? '—'}</div>
-            <div class="metric-box"><strong>latency_ms</strong>${metrics.latency_ms ?? '—'}</div>
-            <div class="metric-box"><strong>cost_usd</strong>${metrics.cost_usd ?? '—'}</div>
-            <div class="metric-box"><strong>safety_failures</strong>${metrics.safety_failures ?? '—'}</div>
+            ${keys.map((key) => `<div class="metric-box"><strong>${key}</strong>${metrics[key]}</div>`).join('')}
           </div>
         `;
       }
