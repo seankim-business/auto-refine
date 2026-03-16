@@ -37,7 +37,13 @@ Both examples are:
 
 - GitHub Pages demo: `https://seankim-business.github.io/auto-refine/`
 
-The demo shows how the incumbent improves over trials, which candidates get discarded, and why constraint failures matter.
+The demo now shows, explicitly:
+- what artifact is being optimized
+- the before/after artifact that wins
+- sample case-level behavior changes
+- which candidates get discarded and why
+
+Current live examples are deterministic proof demos, labeled honestly as such.
 
 ## Quick start
 

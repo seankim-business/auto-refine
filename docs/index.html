@@ -6,119 +6,169 @@
     <title>auto-refine demo</title>
     <style>
       :root {
-        --bg: #0b1020;
-        --panel: #111831;
-        --panel-2: #18213f;
-        --text: #ecf2ff;
-        --muted: #9eb0d1;
+        --bg: #09101d;
+        --bg-2: #0f172a;
+        --panel: rgba(17, 24, 49, 0.88);
+        --panel-2: rgba(24, 33, 63, 0.92);
+        --text: #eef4ff;
+        --muted: #9cb0d2;
         --accent: #7dd3fc;
         --accent-2: #a78bfa;
         --keep: #34d399;
         --discard: #f87171;
         --baseline: #fbbf24;
-        --border: rgba(255,255,255,0.08);
+        --border: rgba(255, 255, 255, 0.08);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
       }
 
       * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
       body {
         margin: 0;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: linear-gradient(180deg, #09101d 0%, #0f172a 100%);
         color: var(--text);
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      }
+      a { color: var(--accent); }
+      code, pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       }
 
-      a { color: var(--accent); }
-      .wrap { width: min(1160px, calc(100vw - 32px)); margin: 0 auto; }
-      .hero {
-        padding: 56px 0 24px;
+      .wrap {
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
       }
+      .section { padding: 22px 0 34px; }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero { padding: 56px 0 22px; }
       .eyebrow {
         display: inline-flex;
+        align-items: center;
         gap: 8px;
         padding: 8px 12px;
-        border: 1px solid var(--border);
         border-radius: 999px;
-        background: rgba(125, 211, 252, 0.08);
+        border: 1px solid var(--border);
         color: var(--accent);
+        background: rgba(125, 211, 252, 0.08);
         font-size: 13px;
         letter-spacing: 0.02em;
       }
       h1 {
-        font-size: clamp(32px, 5vw, 60px);
-        line-height: 1.02;
-        margin: 18px 0 14px;
+        font-size: clamp(36px, 5vw, 66px);
+        line-height: 0.98;
+        margin: 18px 0 16px;
+        max-width: 980px;
       }
       .sub {
-        max-width: 760px;
+        max-width: 860px;
         color: var(--muted);
-        font-size: 18px;
-        line-height: 1.6;
+        font-size: 19px;
+        line-height: 1.65;
       }
       .hero-actions {
-        margin-top: 22px;
+        margin-top: 24px;
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
       }
       .button {
+        text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        text-decoration: none;
-        padding: 12px 16px;
-        border-radius: 12px;
+        padding: 13px 18px;
+        border-radius: 14px;
         border: 1px solid var(--border);
         background: var(--panel);
         color: var(--text);
-        font-weight: 600;
+        font-weight: 650;
       }
       .button.primary {
-        background: linear-gradient(135deg, rgba(125, 211, 252, 0.18), rgba(167, 139, 250, 0.18));
+        background: linear-gradient(135deg, rgba(125, 211, 252, 0.16), rgba(167, 139, 250, 0.16));
       }
-      .section {
-        padding: 16px 0 28px;
+
+      .proof-note {
+        margin-top: 18px;
+        padding: 16px 18px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+        line-height: 1.6;
       }
-      .grid {
+
+      .grid-4 {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
       }
-      .card {
-        background: rgba(17, 24, 49, 0.86);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 18px;
-        box-shadow: 0 14px 50px rgba(0,0,0,0.24);
-      }
-      .mini-label {
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 12px;
-      }
-      .metric {
-        font-size: 28px;
-        margin-top: 8px;
-        font-weight: 700;
-      }
-      .pipeline {
+      .grid-3 {
         display: grid;
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
       }
-      .pipeline .step {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 14px;
-        min-height: 94px;
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
       }
-      .step-num {
-        color: var(--accent-2);
-        font-weight: 700;
+
+      .info-card {
+        padding: 18px;
+      }
+      .label {
+        color: var(--muted);
         font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
+      .value {
+        margin-top: 10px;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.15;
+      }
+      .detail {
+        color: var(--muted);
+        line-height: 1.55;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+
+      .section-title {
+        font-size: 28px;
+        margin: 0 0 10px;
+      }
+      .section-copy {
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 840px;
+        margin: 0 0 18px;
+      }
+
+      .decision-card { padding: 18px; }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid var(--border);
+      }
+      .tag.keep { color: var(--keep); background: rgba(52, 211, 153, 0.1); }
+      .tag.discard { color: var(--discard); background: rgba(248, 113, 113, 0.1); }
+      .tag.rollback { color: var(--baseline); background: rgba(251, 191, 36, 0.1); }
+
       .example {
+        padding: 22px;
         margin-top: 18px;
       }
       .example-head {
@@ -126,6 +176,91 @@
         justify-content: space-between;
         gap: 16px;
         align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .hero-stat {
+        display: grid;
+        gap: 8px;
+        min-width: 220px;
+      }
+      .hero-stat .stat-card {
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+      }
+      .stat-card strong { font-size: 26px; display: block; margin-top: 4px; }
+
+      .artifact-grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .artifact-box {
+        padding: 16px;
+        background: var(--panel-2);
+        border-radius: 18px;
+        border: 1px solid var(--border);
+      }
+      .artifact-box h3 {
+        margin: 8px 0 12px;
+        font-size: 18px;
+      }
+      pre {
+        margin: 0;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(6, 10, 22, 0.66);
+        border: 1px solid rgba(255,255,255,0.06);
+        color: #dfe9ff;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        font-size: 13px;
+      }
+
+      .case-list, .record-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .case, .record {
+        padding: 15px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.03);
+      }
+      .case h4, .record h4 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 10px;
+      }
+      .split .pane {
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+      }
+      .pane strong {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .record-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
         flex-wrap: wrap;
       }
       .badge {
@@ -138,77 +273,57 @@
         font-weight: 700;
         border: 1px solid var(--border);
       }
-      .badge.keep { background: rgba(52, 211, 153, 0.12); color: var(--keep); }
-      .badge.discard { background: rgba(248, 113, 113, 0.12); color: var(--discard); }
-      .badge.baseline { background: rgba(251, 191, 36, 0.12); color: var(--baseline); }
-      .example-grid {
-        display: grid;
-        grid-template-columns: 1.2fr 1fr;
-        gap: 16px;
-        margin-top: 16px;
-      }
-      .chart-box {
-        padding: 16px;
-        background: var(--panel-2);
-        border-radius: 16px;
-        border: 1px solid var(--border);
-      }
-      .records {
-        display: grid;
-        gap: 10px;
-      }
-      .record {
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 12px 14px;
-        background: rgba(255,255,255,0.02);
-      }
-      .record-top {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        align-items: center;
-        margin-bottom: 8px;
-      }
+      .badge.keep { color: var(--keep); background: rgba(52, 211, 153, 0.1); }
+      .badge.discard { color: var(--discard); background: rgba(248, 113, 113, 0.1); }
+      .badge.baseline { color: var(--baseline); background: rgba(251, 191, 36, 0.1); }
+
       .record-mutation {
+        margin-top: 8px;
         color: var(--muted);
-        line-height: 1.5;
-        font-size: 14px;
+        line-height: 1.55;
       }
-      .kv {
+      .metrics {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 8px;
-        margin-top: 10px;
+        margin-top: 12px;
       }
-      .kv div {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid var(--border);
-        border-radius: 12px;
+      .metric-box {
         padding: 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.03);
       }
-      .kv strong {
+      .metric-box strong {
         display: block;
-        font-size: 12px;
         color: var(--muted);
+        font-size: 12px;
         margin-bottom: 6px;
       }
-      .constraints {
+      .constraint-box {
         margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
         color: #fecaca;
+        background: rgba(248, 113, 113, 0.08);
+        border: 1px solid rgba(248, 113, 113, 0.18);
         font-size: 13px;
+        line-height: 1.5;
       }
-      .footer {
+
+      .footnote {
+        margin-top: 16px;
         color: var(--muted);
         font-size: 14px;
-        padding: 16px 0 48px;
+        line-height: 1.7;
       }
-      svg text { fill: var(--muted); font-size: 12px; }
+
       @media (max-width: 980px) {
-        .grid, .pipeline, .example-grid, .kv { grid-template-columns: 1fr 1fr; }
+        .grid-4, .grid-3, .grid-2, .artifact-grid, .metrics, .split { grid-template-columns: 1fr 1fr; }
       }
-      @media (max-width: 700px) {
-        .grid, .pipeline, .example-grid, .kv { grid-template-columns: 1fr; }
+      @media (max-width: 720px) {
+        .grid-4, .grid-3, .grid-2, .artifact-grid, .metrics, .split { grid-template-columns: 1fr; }
+        h1 { line-height: 1.02; }
       }
     </style>
   </head>
@@ -216,96 +331,57 @@
     <div class="wrap">
       <section class="hero">
         <span class="eyebrow">auto-refine · benchmark-driven bounded optimization</span>
-        <h1>See optimization happen, not just the final result.</h1>
-        <p class="sub">
-          This demo shows the same core loop optimizing two different artifact types:
-          a prompt and a workflow policy. Good candidates are kept. Expensive or unsafe ones are rejected.
-          Discarded candidates are rolled back automatically.
-        </p>
+        <h1>Optimize prompts, policies, and other bounded artifacts — without breaking latency, cost, or safety.</h1>
+        <p class="sub" id="hero-tagline"></p>
         <div class="hero-actions">
           <a class="button primary" href="https://github.com/seankim-business/auto-refine">View GitHub repo</a>
-          <a class="button" href="https://github.com/seankim-business/auto-refine#quick-start">Quick start</a>
+          <a class="button" href="#examples">See proof examples</a>
         </div>
+        <div class="proof-note" id="proof-note"></div>
       </section>
 
       <section class="section">
-        <div class="grid">
-          <div class="card">
-            <div class="mini-label">Core idea</div>
-            <div class="metric">bounded mutation</div>
-          </div>
-          <div class="card">
-            <div class="mini-label">Judge</div>
-            <div class="metric">metric + constraints</div>
-          </div>
-          <div class="card">
-            <div class="mini-label">Failure mode</div>
-            <div class="metric">discard + rollback</div>
-          </div>
-          <div class="card">
-            <div class="mini-label">Artifact types</div>
-            <div class="metric">prompt / policy</div>
-          </div>
-        </div>
+        <h2 class="section-title">What exactly gets optimized?</h2>
+        <p class="section-copy">auto-refine does not optimize the whole world. It optimizes a bounded artifact against a trusted evaluator, under explicit constraints, with rollback when a candidate is worse or unsafe.</p>
+        <div class="grid-4" id="opt-grid"></div>
       </section>
 
       <section class="section">
-        <div class="pipeline">
-          <div class="step"><div class="step-num">01</div><strong>Baseline</strong><p>Score the current incumbent first.</p></div>
-          <div class="step"><div class="step-num">02</div><strong>Propose</strong><p>Generate one bounded mutation.</p></div>
-          <div class="step"><div class="step-num">03</div><strong>Evaluate</strong><p>Run the trial command and collect metrics.</p></div>
-          <div class="step"><div class="step-num">04</div><strong>Check constraints</strong><p>Reject expensive, slow, or unsafe variants.</p></div>
-          <div class="step"><div class="step-num">05</div><strong>Keep / discard</strong><p>Only keep strict improvements.</p></div>
-          <div class="step"><div class="step-num">06</div><strong>Ledger</strong><p>Write report, reasons, and best incumbent.</p></div>
-        </div>
+        <h2 class="section-title">What the engine actually decides</h2>
+        <p class="section-copy">The useful part is not “run some experiments.” The useful part is the decision boundary: what gets kept, what gets rejected, and how the incumbent remains clean.</p>
+        <div class="grid-3" id="decision-grid"></div>
       </section>
 
-      <section class="section">
-        <div id="examples"></div>
+      <section class="section" id="examples">
+        <h2 class="section-title">Proof examples that show the mechanism clearly</h2>
+        <p class="section-copy">These are deterministic local proof examples, not production benchmark claims. They are here to show the product behavior legibly: the artifact changes, the evaluator scores it, constraints block bad candidates, and the incumbent only advances on accepted improvements.</p>
+        <div id="example-list"></div>
       </section>
 
-      <section class="footer">
-        Built from deterministic example data in <code>docs/demo-data.json</code>. For real tasks, the same UI can be fed from run summaries.
+      <section class="section footnote">
+        Next step for the product: replace proof examples with real benchmark-backed adapters. The landing page is now explicit about today’s scope instead of pretending the toy examples are more than they are.
       </section>
     </div>
 
     <script>
-      const colors = {
-        baseline: '#fbbf24',
-        keep: '#34d399',
-        discard: '#f87171'
-      };
-
-      function renderChart(points) {
-        const w = 520;
-        const h = 220;
-        const pad = 28;
-        const max = 1;
-        const stepX = (w - pad * 2) / Math.max(points.length - 1, 1);
-        const toY = (value) => h - pad - value * (h - pad * 2) / max;
-        const polyline = points.map((v, i) => `${pad + i * stepX},${toY(v)}`).join(' ');
-
-        const labels = points.map((_, i) => {
-          const x = pad + i * stepX;
-          return `<text x="${x}" y="${h - 8}" text-anchor="middle">${i === 0 ? 'base' : i}</text>`;
-        }).join('');
-
-        const dots = points.map((v, i) => {
-          const x = pad + i * stepX;
-          const y = toY(v);
-          return `<circle cx="${x}" cy="${y}" r="5" fill="#7dd3fc"></circle>`;
-        }).join('');
-
+      function renderInfoCard(item) {
         return `
-          <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="incumbent progression chart">
-            <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="rgba(255,255,255,0.15)"></line>
-            <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="rgba(255,255,255,0.15)"></line>
-            <polyline fill="none" stroke="#7dd3fc" stroke-width="3" points="${polyline}"></polyline>
-            ${dots}
-            ${labels}
-            <text x="12" y="${pad+4}">1.0</text>
-            <text x="12" y="${h-pad+4}">0.0</text>
-          </svg>
+          <div class="card info-card">
+            <div class="label">${item.label}</div>
+            <div class="value">${item.value}</div>
+            <div class="detail">${item.detail}</div>
+          </div>
+        `;
+      }
+
+      function renderDecisionCard(item, idx) {
+        const cls = idx === 0 ? 'keep' : idx === 1 ? 'discard' : 'rollback';
+        return `
+          <div class="card decision-card">
+            <span class="tag ${cls}">${item.tag}</span>
+            <div class="value" style="font-size: 22px; margin-top: 12px;">${item.title}</div>
+            <div class="detail">${item.body}</div>
+          </div>
         `;
       }
 
@@ -314,63 +390,93 @@
         return `<span class="badge ${cls}">${decision.toUpperCase()}</span>`;
       }
 
-      function recordCard(record, primaryMetric) {
-        const metrics = record.metrics || {};
-        const failures = record.constraintFailures && record.constraintFailures.length
-          ? `<div class="constraints"><strong>Constraint failure:</strong> ${record.constraintFailures.join(' · ')}</div>`
+      function renderMetrics(metrics, primaryMetric) {
+        return `
+          <div class="metrics">
+            <div class="metric-box"><strong>${primaryMetric}</strong>${metrics[primaryMetric] ?? '—'}</div>
+            <div class="metric-box"><strong>latency_ms</strong>${metrics.latency_ms ?? '—'}</div>
+            <div class="metric-box"><strong>cost_usd</strong>${metrics.cost_usd ?? '—'}</div>
+            <div class="metric-box"><strong>safety_failures</strong>${metrics.safety_failures ?? '—'}</div>
+          </div>
+        `;
+      }
+
+      function renderCase(study) {
+        return `
+          <div class="case">
+            <h4>${study.label}</h4>
+            <div class="split">
+              <div class="pane">
+                <strong>Before</strong>
+                <div>${study.baselineBehavior}</div>
+              </div>
+              <div class="pane">
+                <strong>After / Best kept</strong>
+                <div>${study.bestBehavior}</div>
+              </div>
+            </div>
+            <div class="detail">${study.whyItMatters}</div>
+          </div>
+        `;
+      }
+
+      function renderRecord(record, primaryMetric) {
+        const failures = record.constraintFailures?.length
+          ? `<div class="constraint-box"><strong>Constraint failure:</strong> ${record.constraintFailures.join(' · ')}</div>`
           : '';
         return `
           <div class="record">
-            <div class="record-top">
-              <strong>${record.name}</strong>
+            <div class="record-head">
+              <h4>${record.name}</h4>
               ${badge(record.decision)}
             </div>
             <div class="record-mutation">${record.mutation}</div>
-            <div class="kv">
-              <div><strong>${primaryMetric}</strong>${metrics[primaryMetric] ?? '—'}</div>
-              <div><strong>latency_ms</strong>${metrics.latency_ms ?? '—'}</div>
-              <div><strong>cost_usd</strong>${metrics.cost_usd ?? '—'}</div>
-              <div><strong>safety_failures</strong>${metrics.safety_failures ?? '—'}</div>
-            </div>
+            ${renderMetrics(record.metrics || {}, primaryMetric)}
             ${failures}
           </div>
         `;
       }
 
       function renderExample(example) {
-        const kept = example.records.filter(r => r.decision === 'keep').length;
-        const discarded = example.records.filter(r => r.decision === 'discard').length;
+        const kept = example.records.filter((r) => r.decision === 'keep').length;
+        const discarded = example.records.filter((r) => r.decision === 'discard').length;
         return `
           <article class="card example">
             <div class="example-head">
-              <div>
-                <div class="mini-label">${example.artifactType}</div>
-                <h2 style="margin: 8px 0 10px; font-size: 28px;">${example.title}</h2>
-                <p style="color: var(--muted); margin: 0; max-width: 720px; line-height: 1.6;">${example.objectiveSummary}</p>
+              <div style="max-width: 760px;">
+                <div class="label">${example.artifactType} · ${example.artifactPath}</div>
+                <h3 style="font-size: 32px; margin: 10px 0 10px;">${example.title}</h3>
+                <p class="section-copy" style="margin-bottom: 8px;">${example.problem}</p>
+                <div class="detail"><strong style="color: var(--text);">What is optimized:</strong> ${example.optimizedThing}</div>
+                <div class="detail" style="margin-top: 8px;"><strong style="color: var(--text);">Objective:</strong> ${example.objectiveSummary}</div>
               </div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <span class="badge baseline">baseline + ${example.records.length - 1} trials</span>
-                <span class="badge keep">${kept} kept</span>
-                <span class="badge discard">${discarded} discarded</span>
-              </div>
-            </div>
-            <div class="example-grid">
-              <div class="chart-box">
-                <div class="mini-label">Incumbent progression</div>
-                <div style="margin-top:8px; color: var(--muted); font-size: 14px;">Primary metric stays flat on discarded candidates and only advances on accepted improvements.</div>
-                <div style="margin-top: 12px;">${renderChart(example.incumbentProgression)}</div>
-              </div>
-              <div class="chart-box">
-                <div class="mini-label">Optimization summary</div>
-                <div style="margin-top: 12px; display:grid; gap:10px;">
-                  <div><strong>Primary metric</strong><div style="color: var(--muted); margin-top: 4px;">${example.primaryMetric} (${example.direction})</div></div>
-                  <div><strong>Best run</strong><div style="color: var(--muted); margin-top: 4px;">${example.records.find(r => r.decision === 'keep')?.name || 'none'} → ${example.records.find(r => r.decision === 'keep')?.metrics?.[example.primaryMetric] ?? '—'}</div></div>
-                  <div><strong>Why discards matter</strong><div style="color: var(--muted); margin-top: 4px;">The engine rejects candidates that are slower, costlier, or unsafe even if they look superficially better.</div></div>
-                </div>
+              <div class="hero-stat">
+                <div class="stat-card"><span class="label">Baseline</span><strong>${example.baselineValue}</strong></div>
+                <div class="stat-card"><span class="label">Best kept</span><strong>${example.bestValue}</strong></div>
+                <div class="stat-card"><span class="label">Trials</span><strong>${example.records.length - 1}</strong><div class="detail">${kept} kept · ${discarded} discarded</div></div>
               </div>
             </div>
-            <div class="records" style="margin-top: 16px;">
-              ${example.records.map((record) => recordCard(record, example.primaryMetric)).join('')}
+
+            <div class="artifact-grid">
+              <div class="artifact-box">
+                <div class="label">Before</div>
+                <h3>Baseline artifact</h3>
+                <pre>${example.baselineArtifact.replace(/</g, '&lt;')}</pre>
+              </div>
+              <div class="artifact-box">
+                <div class="label">After</div>
+                <h3>Best kept artifact</h3>
+                <pre>${example.bestArtifact.replace(/</g, '&lt;')}</pre>
+                <div class="detail" style="margin-top: 12px;">${example.whyKept}</div>
+              </div>
+            </div>
+
+            <div class="case-list">
+              ${example.caseStudies.map(renderCase).join('')}
+            </div>
+
+            <div class="record-list">
+              ${example.records.map((record) => renderRecord(record, example.primaryMetric)).join('')}
             </div>
           </article>
         `;
@@ -380,13 +486,15 @@
         const res = await fetch('./demo-data.json');
         const data = await res.json();
         document.title = data.site.title;
-        document.querySelector('h1').insertAdjacentHTML('afterend', '');
-        const container = document.getElementById('examples');
-        container.innerHTML = data.examples.map(renderExample).join('');
+        document.getElementById('hero-tagline').textContent = data.site.tagline;
+        document.getElementById('proof-note').textContent = data.site.proofNote;
+        document.getElementById('opt-grid').innerHTML = data.whatGetsOptimized.map(renderInfoCard).join('');
+        document.getElementById('decision-grid').innerHTML = data.decisionRules.map(renderDecisionCard).join('');
+        document.getElementById('example-list').innerHTML = data.examples.map(renderExample).join('');
       }
 
       main().catch((err) => {
-        document.getElementById('examples').innerHTML = `<div class="card"><strong>Failed to load demo data.</strong><pre>${String(err)}</pre></div>`;
+        document.body.innerHTML = `<div class="wrap"><section class="section"><div class="card" style="padding: 20px;"><h2>Failed to load demo</h2><pre>${String(err).replace(/</g, '&lt;')}</pre></div></section></div>`;
       });
     </script>
   </body>

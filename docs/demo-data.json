@@ -1,16 +1,78 @@
 {
   "site": {
     "title": "auto-refine demo",
-    "tagline": "How bounded optimization keeps good changes, rejects expensive ones, and rolls back unsafe ones."
+    "tagline": "Optimize bounded artifacts against a trusted evaluator — and keep only the changes that survive cost, latency, and safety constraints.",
+    "proofNote": "Current live page uses deterministic local proof examples. It is intentionally honest about being a proof-of-loop, while showing exactly what gets optimized and why candidates are kept or rejected."
   },
+  "whatGetsOptimized": [
+    {
+      "label": "Bounded artifact",
+      "value": "A file or policy you allow the system to change",
+      "detail": "Examples: a prompt file, a routing policy, a scoring rubric, a config." 
+    },
+    {
+      "label": "Trusted evaluator",
+      "value": "A command that produces measurable results",
+      "detail": "The evaluator decides quality, latency, cost, safety, or any other metrics you care about."
+    },
+    {
+      "label": "Objective + constraints",
+      "value": "Improve one thing without breaking the others",
+      "detail": "Higher quality is not enough if the candidate is slower, pricier, or unsafe."
+    },
+    {
+      "label": "Rollback-safe loop",
+      "value": "Bad candidates are discarded and reverted",
+      "detail": "The incumbent only advances on accepted improvements."
+    }
+  ],
+  "decisionRules": [
+    {
+      "title": "KEEP",
+      "tag": "good candidate",
+      "body": "A candidate is kept only when it improves the primary metric and still satisfies all hard constraints."
+    },
+    {
+      "title": "DISCARD",
+      "tag": "too expensive / too slow / unsafe",
+      "body": "A candidate is rejected even if it looks stronger on the primary metric, when it violates cost, latency, or safety rules."
+    },
+    {
+      "title": "ROLLBACK",
+      "tag": "incumbent stays clean",
+      "body": "After a discard, the mutable artifact is restored to the last accepted incumbent. The bad trial does not linger."
+    }
+  ],
   "examples": [
     {
       "id": "prompt-eval-toy",
-      "title": "Prompt artifact optimization",
+      "title": "Optimize a support-system prompt",
       "artifactType": "prompt text",
+      "artifactPath": "prompts/system.md",
+      "problem": "The starting prompt is too generic. It produces weak answers because it does not ask clarifying questions, does not emphasize safety, and does not guide step-by-step help.",
       "primaryMetric": "quality_score",
       "direction": "maximize",
       "objectiveSummary": "Maximize answer quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
+      "baselineValue": 0.1,
+      "bestValue": 1.0,
+      "optimizedThing": "The engine edits the prompt text itself — not the model — and evaluates whether the new prompt produces better behavior under constraints.",
+      "baselineArtifact": "You are a helpful assistant.",
+      "bestArtifact": "You are a support assistant.\nBe concise.\nAsk one clarifying question when needed.\nGive clear steps.\nRespect safety constraints.",
+      "whyKept": "This candidate raises quality dramatically while staying under latency and cost limits and keeping safety_failures at zero.",
+      "caseStudies": [
+        {
+          "label": "User asks for account-recovery help",
+          "baselineBehavior": "Gives generic support language with no clarifying question and no structured steps.",
+          "bestBehavior": "Asks one clarifying question, then gives concise recovery steps and keeps the answer within the safety rubric.",
+          "whyItMatters": "The improvement is legible as an artifact change: the prompt now instructs clarification, brevity, and procedural help."
+        },
+        {
+          "label": "Tempting but bad candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A verbose candidate hit the same quality score, but was rejected because it exceeded latency and cost constraints.",
+          "whyItMatters": "This shows auto-refine is not just chasing a single score; it is optimizing under business constraints."
+        }
+      ],
       "incumbentProgression": [0.1, 1.0, 1.0, 1.0, 1.0],
       "records": [
         {
@@ -49,11 +111,33 @@
     },
     {
       "id": "routing-policy-toy",
-      "title": "Workflow policy optimization",
-      "artifactType": "policy.json",
+      "title": "Optimize a ticket-routing policy",
+      "artifactType": "workflow policy",
+      "artifactPath": "policy.json",
+      "problem": "The starting routing policy under-escalates sensitive tickets. It is cheap and fast, but it sends some risky tickets to the wrong place.",
       "primaryMetric": "quality_score",
       "direction": "maximize",
       "objectiveSummary": "Maximize routing quality while keeping latency <= 2000ms, cost <= $0.02, safety_failures == 0.",
+      "baselineValue": 0.625,
+      "bestValue": 1.0,
+      "optimizedThing": "The engine edits the routing rules themselves — which categories go to auto-answer, specialist, or manual review — and scores the policy on a fixed ticket set.",
+      "baselineArtifact": "{\n  \"manual_review_categories\": [\"fraud\"],\n  \"specialist_categories\": [\"technical\"],\n  \"urgent_specialist_categories\": [],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": false,\n  \"default_route\": \"auto_answer\"\n}",
+      "bestArtifact": "{\n  \"manual_review_categories\": [\"fraud\", \"security\"],\n  \"specialist_categories\": [\"technical\"],\n  \"urgent_specialist_categories\": [\"refund\"],\n  \"sensitive_manual\": false,\n  \"urgent_payment_manual\": true,\n  \"default_route\": \"auto_answer\"\n}",
+      "whyKept": "This candidate fixes the dangerous routing mistakes without blowing the cost or latency budget.",
+      "caseStudies": [
+        {
+          "label": "Sensitive payment issue",
+          "baselineBehavior": "The baseline policy may still route some urgent payment tickets too cheaply and too casually.",
+          "bestBehavior": "The kept policy forces urgent payment issues into manual review, eliminating the risky path.",
+          "whyItMatters": "This is a direct business rule improvement encoded in the artifact itself."
+        },
+        {
+          "label": "Over-escalation candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A broader manual-review policy improved some accuracy but was rejected because average cost went above the allowed ceiling.",
+          "whyItMatters": "This shows the optimizer is useful for operational policy tuning, not just prompt tinkering."
+        }
+      ],
       "incumbentProgression": [0.625, 1.0, 1.0, 1.0, 1.0],
       "records": [
         {
