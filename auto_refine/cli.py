@@ -4,6 +4,7 @@ import argparse
 
 from .demo import build_demo_data
 from .engine import run_from_config
+from .goal_tree import run_goal_tree
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -17,6 +18,9 @@ def build_parser() -> argparse.ArgumentParser:
     demo_parser = subparsers.add_parser("build-demo-data", help="build demo-data.json from runtime summaries")
     demo_parser.add_argument("config", help="path to demo-config.json")
     demo_parser.add_argument("--output", required=True, help="path to write generated demo-data.json")
+
+    tree_parser = subparsers.add_parser("run-goal-tree", help="run a recursive goal/hypothesis tree")
+    tree_parser.add_argument("config", help="path to goal-tree json")
     return parser
 
 
@@ -31,6 +35,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "build-demo-data":
         build_demo_data(args.config, output_path=args.output)
         print(f"[complete] demo_data={args.output}")
+        return 0
+    if args.command == "run-goal-tree":
+        run_dir = run_goal_tree(args.config)
+        print(f"[complete] goal_tree_run_dir={run_dir}")
         return 0
 
     parser.error(f"unsupported command: {args.command}")

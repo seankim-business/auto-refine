@@ -1,0 +1,14 @@
+{
+  "name": "marketing-strategy-tree",
+  "task_root": "../..",
+  "output_dir": "runs/goal-trees",
+  "max_depth": 8,
+  "root": {
+    "name": "strengthen-product-positioning",
+    "hypothesis": "A stronger positioning message can be built by decomposing clarity and excitement hypotheses.",
+    "decomposerCommand": [
+      "python3",
+      "goal_trees/marketing_strategy/scripts/root_decompose.py"
+    ]
+  }
+}

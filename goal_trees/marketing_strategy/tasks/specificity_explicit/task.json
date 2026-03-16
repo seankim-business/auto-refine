@@ -1,0 +1,19 @@
+{
+  "name": "specificity-explicit",
+  "task_root": ".",
+  "mutable_paths": ["hero.md"],
+  "baseline_command": ["python3", "../../scripts/evaluate_leaf.py"],
+  "proposer_command": ["python3", "proposer.py"],
+  "trial_command": ["python3", "../../scripts/evaluate_leaf.py"],
+  "objective": {
+    "primary_metric": "quality_score",
+    "direction": "maximize",
+    "constraints": [
+      {"metric": "latency_ms", "op": "<=", "value": 2200},
+      {"metric": "cost_usd", "op": "<=", "value": 0.02},
+      {"metric": "hype_flags", "op": "==", "value": 0}
+    ]
+  },
+  "iterations": 1,
+  "output_dir": "runs/auto-refine"
+}
