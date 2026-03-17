@@ -423,12 +423,16 @@
       ],
       "primaryMetric": "quality_score",
       "direction": "maximize",
-      "baselineValue": 0.0,
+      "baselineValue": 0.95,
       "bestValue": 0.95,
-      "baselineArtifact": "auto-refine helps improve artifacts by running bounded experiments.\n",
+      "baselineArtifact": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n",
       "bestArtifact": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n",
       "incumbentProgression": [
-        0.0,
+        0.95,
+        0.95,
+        0.95,
+        0.95,
+        0.95,
         0.95,
         0.95,
         0.95,
@@ -441,24 +445,24 @@
           "name": "baseline",
           "mutation": "baseline",
           "metrics": {
-            "quality_score": 0.0,
-            "latency_ms": 968,
-            "cost_usd": 0.0048,
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
             "hype_flags": 0,
-            "artifact_chars": 67
+            "artifact_chars": 255
           },
           "decision": "baseline",
           "improved": false,
           "constraint_failures": [],
           "artifacts": {
-            "marketing/hero.md": "auto-refine helps improve artifacts by running bounded experiments.\n"
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
           },
           "proposer_exit_code": null,
           "evaluator_exit_code": 0,
           "proposer_log": null,
-          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/baseline-evaluator.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/baseline-evaluator.log",
           "incumbent_primary": null,
-          "candidate_primary": 0.0,
+          "candidate_primary": 0.95,
           "error": null
         },
         {
@@ -473,17 +477,17 @@
             "hype_flags": 0,
             "artifact_chars": 255
           },
-          "decision": "keep",
-          "improved": true,
+          "decision": "discard",
+          "improved": false,
           "constraint_failures": [],
           "artifacts": {
             "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
           },
           "proposer_exit_code": 0,
           "evaluator_exit_code": 0,
-          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-001-proposer.log",
-          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-001-trial.log",
-          "incumbent_primary": 0.0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-001-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-001-trial.log",
+          "incumbent_primary": 0.95,
           "candidate_primary": 0.95,
           "error": null
         },
@@ -509,8 +513,8 @@
           },
           "proposer_exit_code": 0,
           "evaluator_exit_code": 0,
-          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-002-proposer.log",
-          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-002-trial.log",
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-002-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-002-trial.log",
           "incumbent_primary": 0.95,
           "candidate_primary": 0.08,
           "error": null
@@ -535,8 +539,8 @@
           },
           "proposer_exit_code": 0,
           "evaluator_exit_code": 0,
-          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-003-proposer.log",
-          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-003-trial.log",
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-003-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-003-trial.log",
           "incumbent_primary": 0.95,
           "candidate_primary": 0.0,
           "error": null
@@ -564,14 +568,118 @@
           },
           "proposer_exit_code": 0,
           "evaluator_exit_code": 0,
-          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-004-proposer.log",
-          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260316-204744/attempt-004-trial.log",
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-004-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-004-trial.log",
           "incumbent_primary": 0.95,
           "candidate_primary": 0.91,
           "error": null
+        },
+        {
+          "attempt": 5,
+          "phase": "trial",
+          "name": "attempt-5",
+          "mutation": "no-op variant for attempt 5",
+          "metrics": {
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
+            "hype_flags": 0,
+            "artifact_chars": 255
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-005-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-005-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.95,
+          "error": null
+        },
+        {
+          "attempt": 6,
+          "phase": "trial",
+          "name": "attempt-6",
+          "mutation": "no-op variant for attempt 6",
+          "metrics": {
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
+            "hype_flags": 0,
+            "artifact_chars": 255
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-006-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-006-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.95,
+          "error": null
+        },
+        {
+          "attempt": 7,
+          "phase": "trial",
+          "name": "attempt-7",
+          "mutation": "no-op variant for attempt 7",
+          "metrics": {
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
+            "hype_flags": 0,
+            "artifact_chars": 255
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-007-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-007-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.95,
+          "error": null
+        },
+        {
+          "attempt": 8,
+          "phase": "trial",
+          "name": "attempt-8",
+          "mutation": "no-op variant for attempt 8",
+          "metrics": {
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
+            "hype_flags": 0,
+            "artifact_chars": 255
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-008-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-008-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.95,
+          "error": null
         }
       ],
-      "generatedFrom": "runs/self-refine-marketing/run-20260316-204744/summary.json"
+      "generatedFrom": "runs/self-refine-marketing/run-20260317-092327/summary.json"
     }
   ]
 }

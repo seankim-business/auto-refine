@@ -16,6 +16,15 @@ class GoalTreeIntegrationTests(unittest.TestCase):
             root = Path(tmp) / "repo"
             shutil.copytree(repo_root / "auto_refine", root / "auto_refine")
             shutil.copytree(repo_root / "goal_trees", root / "goal_trees")
+            (root / "goal_trees" / "marketing_strategy" / "tasks" / "specificity_explicit" / "hero.md").write_text(
+                "auto-refine makes artifacts better.\n"
+            )
+            (root / "goal_trees" / "marketing_strategy" / "tasks" / "specificity_vague" / "hero.md").write_text(
+                "auto-refine makes artifacts better.\n"
+            )
+            (root / "goal_trees" / "marketing_strategy" / "tasks" / "hype_branch" / "hero.md").write_text(
+                "auto-refine improves systems safely.\n"
+            )
             config_path = root / "goal_trees" / "marketing_strategy" / "tree.json"
 
             proc = subprocess.run(

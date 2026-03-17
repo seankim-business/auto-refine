@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
-from dataclasses import asdict
+from dataclasses import asdict, fields
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,27 @@ def _now_slug() -> str:
 
 def _read_snapshot(paths: list[Path]) -> dict[str, bytes]:
     return {str(path): path.read_bytes() for path in paths}
+
+
+def _load_snapshot_from_dir(snapshot_dir: Path, task_root: Path) -> dict[str, bytes]:
+    snapshot: dict[str, bytes] = {}
+    for path in snapshot_dir.rglob("*"):
+        if path.is_file():
+            rel = path.relative_to(snapshot_dir)
+            snapshot[str((task_root / rel).resolve())] = path.read_bytes()
+    return snapshot
+
+
+def _write_snapshot_to_dir(snapshot: dict[str, bytes], snapshot_dir: Path, task_root: Path) -> None:
+    if snapshot_dir.exists():
+        shutil.rmtree(snapshot_dir)
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+    for raw_path, payload in snapshot.items():
+        path = Path(raw_path)
+        rel = path.relative_to(task_root)
+        dest = snapshot_dir / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(payload)
 
 
 def _snapshot_text_artifacts(paths: list[Path], task_root: Path, max_chars: int = 4000) -> dict[str, str]:
@@ -71,16 +93,39 @@ def _run_command(command: list[str], cwd: Path, env: dict[str, str], log_path: P
     return proc.returncode, proc.stdout
 
 
+def _trial_record_from_dict(raw: dict[str, Any]) -> TrialRecord:
+    allowed = {field.name for field in fields(TrialRecord)}
+    payload = {key: value for key, value in raw.items() if key in allowed}
+    return TrialRecord(**payload)
+
+
 class GenericAutoresearchEngine:
     def __init__(self, task: TaskConfig, run_dir: Path):
         self.task = task
         self.run_dir = run_dir
         self.ledger_path = run_dir / "ledger.jsonl"
+        self.state_path = run_dir / "state.json"
+        self.incumbent_dir = run_dir / "incumbent"
         self.records: list[TrialRecord] = []
 
     @classmethod
     def from_config(cls, config_path: str | Path) -> "GenericAutoresearchEngine":
         task = load_task_config(config_path)
+        run_dir = task.output_dir / _now_slug()
+        run_dir.mkdir(parents=True, exist_ok=True)
+        return cls(task=task, run_dir=run_dir)
+
+    @classmethod
+    def resume_latest(cls, config_path: str | Path) -> "GenericAutoresearchEngine":
+        task = load_task_config(config_path)
+        run_dirs = sorted(
+            [path for path in task.output_dir.glob("run-*") if path.is_dir() and (path / "state.json").exists()],
+            key=lambda path: path.stat().st_mtime,
+        )
+        if run_dirs:
+            engine = cls(task=task, run_dir=run_dirs[-1])
+            engine._load_records()
+            return engine
         run_dir = task.output_dir / _now_slug()
         run_dir.mkdir(parents=True, exist_ok=True)
         return cls(task=task, run_dir=run_dir)
@@ -100,28 +145,122 @@ class GenericAutoresearchEngine:
         with self.ledger_path.open("a") as f:
             f.write(json.dumps(asdict(record), ensure_ascii=False) + "\n")
 
-    def run(self, iteration_override: int | None = None) -> Path:
-        iterations = iteration_override or self.task.iterations
+    def _load_records(self) -> None:
+        self.records = []
+        if not self.ledger_path.exists():
+            return
+        for line in self.ledger_path.read_text().splitlines():
+            if not line.strip():
+                continue
+            self.records.append(_trial_record_from_dict(json.loads(line)))
+
+    def _write_state(
+        self,
+        *,
+        attempts_completed: int,
+        incumbent_metrics: dict[str, Any],
+        baseline_metrics: dict[str, Any],
+    ) -> None:
+        kept_trials = len([record for record in self.records if record.decision == "keep"])
+        payload = {
+            "task": self.task.name,
+            "attempts_completed": attempts_completed,
+            "kept_trials": kept_trials,
+            "incumbent_metrics": incumbent_metrics,
+            "baseline_metrics": baseline_metrics,
+        }
+        self.state_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+
+    def _load_state(self) -> dict[str, Any]:
+        if not self.state_path.exists():
+            raise EngineError(f"state file missing: {self.state_path}")
+        return json.loads(self.state_path.read_text())
+
+    def _initialize_new_run(self) -> tuple[dict[str, bytes], dict[str, Any], dict[str, Any]]:
         incumbent_snapshot = _read_snapshot(self.task.mutable_paths)
+        _write_snapshot_to_dir(incumbent_snapshot, self.incumbent_dir, self.task.task_root)
         baseline_record = self._run_baseline(incumbent_snapshot)
         incumbent_metrics = baseline_record.metrics
+        self._write_state(
+            attempts_completed=0,
+            incumbent_metrics=incumbent_metrics,
+            baseline_metrics=baseline_record.metrics,
+        )
+        return incumbent_snapshot, incumbent_metrics, baseline_record.metrics
 
-        for attempt in range(1, iterations + 1):
+    def _run_attempts(
+        self,
+        *,
+        start_attempt: int,
+        end_attempt: int,
+        incumbent_snapshot: dict[str, bytes],
+        incumbent_metrics: dict[str, Any],
+        baseline_metrics: dict[str, Any],
+    ) -> tuple[dict[str, bytes], dict[str, Any]]:
+        for attempt in range(start_attempt, end_attempt + 1):
             _restore_snapshot(incumbent_snapshot)
             record, candidate_snapshot = self._run_trial(attempt, incumbent_metrics)
             if record.decision == "keep":
                 incumbent_snapshot = candidate_snapshot
                 incumbent_metrics = record.metrics
+                _write_snapshot_to_dir(incumbent_snapshot, self.incumbent_dir, self.task.task_root)
             else:
                 _restore_snapshot(incumbent_snapshot)
             self._append_record(record)
+            self._write_state(
+                attempts_completed=attempt,
+                incumbent_metrics=incumbent_metrics,
+                baseline_metrics=baseline_metrics,
+            )
             primary = record.metrics.get(self.task.objective.primary_metric)
             print(
                 f"[trial {attempt}] {record.name} decision={record.decision} primary={primary}",
                 flush=True,
             )
+        return incumbent_snapshot, incumbent_metrics
+
+    def run(self, iteration_override: int | None = None) -> Path:
+        iterations = iteration_override or self.task.iterations
+        incumbent_snapshot, incumbent_metrics, baseline_metrics = self._initialize_new_run()
+        incumbent_snapshot, incumbent_metrics = self._run_attempts(
+            start_attempt=1,
+            end_attempt=iterations,
+            incumbent_snapshot=incumbent_snapshot,
+            incumbent_metrics=incumbent_metrics,
+            baseline_metrics=baseline_metrics,
+        )
+        _restore_snapshot(incumbent_snapshot)
+        _write_snapshot_to_dir(incumbent_snapshot, self.incumbent_dir, self.task.task_root)
+        self._write_report()
+        return self.run_dir
+
+    def resume(self, budget: int) -> Path:
+        if budget < 1:
+            raise EngineError("budget must be >= 1")
+        if not self.state_path.exists():
+            incumbent_snapshot, incumbent_metrics, baseline_metrics = self._initialize_new_run()
+            attempts_completed = 0
+        else:
+            state = self._load_state()
+            attempts_completed = int(state.get("attempts_completed", 0))
+            incumbent_metrics = state["incumbent_metrics"]
+            baseline_metrics = state["baseline_metrics"]
+            incumbent_snapshot = _load_snapshot_from_dir(self.incumbent_dir, self.task.task_root)
+            if not incumbent_snapshot:
+                incumbent_snapshot = _read_snapshot(self.task.mutable_paths)
+            _restore_snapshot(incumbent_snapshot)
+
+        if attempts_completed < budget:
+            incumbent_snapshot, incumbent_metrics = self._run_attempts(
+                start_attempt=attempts_completed + 1,
+                end_attempt=budget,
+                incumbent_snapshot=incumbent_snapshot,
+                incumbent_metrics=incumbent_metrics,
+                baseline_metrics=baseline_metrics,
+            )
 
         _restore_snapshot(incumbent_snapshot)
+        _write_snapshot_to_dir(incumbent_snapshot, self.incumbent_dir, self.task.task_root)
         self._write_report()
         return self.run_dir
 
@@ -319,3 +458,8 @@ class GenericAutoresearchEngine:
 def run_from_config(config_path: str | Path, iteration_override: int | None = None) -> Path:
     engine = GenericAutoresearchEngine.from_config(config_path)
     return engine.run(iteration_override=iteration_override)
+
+
+def resume_from_config(config_path: str | Path, budget: int) -> Path:
+    engine = GenericAutoresearchEngine.resume_latest(config_path)
+    return engine.resume(budget=budget)

@@ -54,6 +54,7 @@ python3 -m auto_refine run examples/prompt_eval_toy/task.json --iterations 4
 python3 -m auto_refine run examples/routing_policy_toy/task.json --iterations 4
 python3 -m auto_refine run self_tasks/marketing_copy/task.json --iterations 4
 python3 -m auto_refine run-goal-tree goal_trees/marketing_strategy/tree.json
+python3 -m auto_refine resume --task self_tasks/marketing_copy/task.json --budget 8
 ```
 
 ## Self-refine this repo
@@ -67,6 +68,20 @@ The repo now includes a bounded self-hosting task:
 This is intentionally narrow: it lets `auto-refine` improve a repo-owned marketing artifact without turning into an unrestricted self-editing system.
 
 When you run it, the winning incumbent is written back to `marketing/hero.md`, and the baseline/trial artifact texts are preserved in `summary.json` for inspection.
+
+## Persistent / budgeted refinement
+
+`auto-refine` can now resume the latest run for a task up to a total trial budget.
+
+```bash
+python3 -m auto_refine resume --task self_tasks/marketing_copy/task.json --budget 8
+```
+
+This makes long-running self-hosted refinement a first-class capability:
+- latest run is resumed instead of starting from scratch
+- `state.json` tracks attempts completed and incumbent metrics
+- `incumbent/` stores the current accepted artifact snapshot
+- one-shot task runs are resume-compatible
 
 ## Hierarchical goal trees
 
@@ -134,6 +149,7 @@ Included in this repo:
 - constrained keep/discard decision policy
 - file snapshot rollback
 - artifact text snapshots in `summary.json`
+- persistent `resume --task ... --budget ...` refinement mode
 - recursive goal / hypothesis tree runtime
 - ledger + Markdown report generation
 - deterministic proof examples
