@@ -76,6 +76,32 @@ def _merge_example(repo_root: Path, metadata: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _count_goal_nodes(node: dict[str, Any]) -> dict[str, int]:
+    accepted = 1 if node.get("verdict") == "accepted" else 0
+    rejected = 1 if node.get("verdict") == "rejected" else 0
+    total = 1
+    for child in node.get("children", []):
+        child_counts = _count_goal_nodes(child)
+        total += child_counts["total"]
+        accepted += child_counts["accepted"]
+        rejected += child_counts["rejected"]
+    return {"total": total, "accepted": accepted, "rejected": rejected}
+
+
+
+def _merge_goal_tree(repo_root: Path, metadata: dict[str, Any]) -> dict[str, Any]:
+    summary_path = _latest_match(repo_root, metadata["summaryGlob"])
+    summary = json.loads(summary_path.read_text())
+    counts = _count_goal_nodes(summary["root"])
+    return {
+        **metadata,
+        "root": summary["root"],
+        "nodeCounts": counts,
+        "generatedFrom": str(summary_path.relative_to(repo_root)),
+    }
+
+
+
 def build_demo_data(config_path: str | Path, output_path: str | Path | None = None) -> dict[str, Any]:
     config_path = Path(config_path).resolve()
     config = json.loads(config_path.read_text())
@@ -86,6 +112,7 @@ def build_demo_data(config_path: str | Path, output_path: str | Path | None = No
         "whatGetsOptimized": config["whatGetsOptimized"],
         "decisionRules": config["decisionRules"],
         "examples": [_merge_example(repo_root, item) for item in config["examples"]],
+        "goalTrees": [_merge_goal_tree(repo_root, item) for item in config.get("goalTrees", [])],
     }
 
     if output_path is not None:

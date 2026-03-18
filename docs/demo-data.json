@@ -912,5 +912,82 @@
       ],
       "generatedFrom": "runs/self-refine-marketing/run-20260317-092327/summary.json"
     }
+  ],
+  "goalTrees": [
+    {
+      "id": "marketing-strategy-tree",
+      "summaryGlob": "runs/goal-trees/run-*/goal-tree-summary.json",
+      "title": "Visualize recursive goal decomposition",
+      "problem": "Flat optimization is useful, but it hides a more interesting product idea: large goals can be decomposed into falsifiable sub-goals and automatically accepted or rejected node by node.",
+      "whyItMatters": "This is where auto-refine starts to look like a structured research/strategy engine instead of a simple trial runner. Accepted descendants rescue good branches; rejected hypotheses die automatically.",
+      "root": {
+        "name": "strengthen-product-positioning",
+        "hypothesis": "A stronger positioning message can be built by decomposing clarity and excitement hypotheses.",
+        "depth": 0,
+        "verdict": "accepted",
+        "reason": "1 child hypothesis/hypotheses accepted",
+        "task_run_dir": null,
+        "task_baseline_primary": null,
+        "task_best_primary": null,
+        "children": [
+          {
+            "name": "improve-specificity",
+            "hypothesis": "Naming exactly what gets optimized will improve positioning clarity.",
+            "depth": 1,
+            "verdict": "accepted",
+            "reason": "1 child hypothesis/hypotheses accepted",
+            "task_run_dir": null,
+            "task_baseline_primary": null,
+            "task_best_primary": null,
+            "children": [
+              {
+                "name": "name-bounded-artifacts-explicitly",
+                "hypothesis": "Explicitly naming prompts, policies, and configs will improve clarity.",
+                "depth": 2,
+                "verdict": "accepted",
+                "reason": "node task produced at least one kept candidate",
+                "task_run_dir": "/Users/sean/.openclaw/workspace/projects/auto-refine/goal_trees/marketing_strategy/tasks/specificity_explicit/runs/auto-refine/run-20260316-212219",
+                "task_baseline_primary": 0.0,
+                "task_best_primary": 1.0,
+                "children": [],
+                "error": null
+              },
+              {
+                "name": "keep-it-vague",
+                "hypothesis": "Vague wording can still be good enough.",
+                "depth": 2,
+                "verdict": "rejected",
+                "reason": "node task produced no kept candidates",
+                "task_run_dir": "/Users/sean/.openclaw/workspace/projects/auto-refine/goal_trees/marketing_strategy/tasks/specificity_vague/runs/auto-refine/run-20260316-212220",
+                "task_baseline_primary": 0.0,
+                "task_best_primary": null,
+                "children": [],
+                "error": null
+              }
+            ],
+            "error": null
+          },
+          {
+            "name": "increase-excitement-with-hype",
+            "hypothesis": "More hype will make the product feel more compelling.",
+            "depth": 1,
+            "verdict": "rejected",
+            "reason": "node task produced no kept candidates",
+            "task_run_dir": "/Users/sean/.openclaw/workspace/projects/auto-refine/goal_trees/marketing_strategy/tasks/hype_branch/runs/auto-refine/run-20260316-212220",
+            "task_baseline_primary": 0.0,
+            "task_best_primary": null,
+            "children": [],
+            "error": null
+          }
+        ],
+        "error": null
+      },
+      "nodeCounts": {
+        "total": 5,
+        "accepted": 3,
+        "rejected": 2
+      },
+      "generatedFrom": "runs/goal-trees/run-20260316-212219/goal-tree-summary.json"
+    }
   ]
 }

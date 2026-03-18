@@ -93,6 +93,81 @@ class DemoBuilderTests(unittest.TestCase):
             self.assertEqual(example["incumbentProgression"], [0.2, 0.9, 0.9])
             self.assertTrue(output_path.exists())
 
+    def test_build_demo_data_merges_goal_tree_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            runs = root / "runs" / "goal-trees" / "run-1"
+            docs.mkdir(parents=True)
+            runs.mkdir(parents=True)
+
+            summary = {
+                "name": "tree",
+                "task_root": str(root),
+                "root": {
+                    "name": "root-goal",
+                    "hypothesis": "root hypothesis",
+                    "depth": 0,
+                    "verdict": "accepted",
+                    "reason": "1 child accepted",
+                    "task_run_dir": None,
+                    "task_baseline_primary": None,
+                    "task_best_primary": None,
+                    "children": [
+                        {
+                            "name": "child-a",
+                            "hypothesis": "accepted child",
+                            "depth": 1,
+                            "verdict": "accepted",
+                            "reason": "kept candidate exists",
+                            "task_run_dir": "runs/a",
+                            "task_baseline_primary": 0.0,
+                            "task_best_primary": 1.0,
+                            "children": [],
+                            "error": None,
+                        },
+                        {
+                            "name": "child-b",
+                            "hypothesis": "rejected child",
+                            "depth": 1,
+                            "verdict": "rejected",
+                            "reason": "no kept candidates",
+                            "task_run_dir": "runs/b",
+                            "task_baseline_primary": 0.0,
+                            "task_best_primary": None,
+                            "children": [],
+                            "error": None,
+                        },
+                    ],
+                    "error": None,
+                },
+            }
+            (runs / "goal-tree-summary.json").write_text(json.dumps(summary))
+
+            config = {
+                "repoRoot": "..",
+                "site": {"title": "demo", "tagline": "tag", "proofNote": "note"},
+                "whatGetsOptimized": [],
+                "decisionRules": [],
+                "examples": [],
+                "goalTrees": [
+                    {
+                        "id": "tree-example",
+                        "summaryGlob": "runs/goal-trees/run-*/goal-tree-summary.json",
+                        "title": "Tree Example",
+                        "problem": "problem",
+                        "whyItMatters": "why",
+                    }
+                ],
+            }
+            config_path = docs / "demo-config.json"
+            config_path.write_text(json.dumps(config))
+
+            data = build_demo_data(config_path)
+            tree = data["goalTrees"][0]
+            self.assertEqual(tree["root"]["name"], "root-goal")
+            self.assertEqual(tree["nodeCounts"], {"total": 3, "accepted": 2, "rejected": 1})
+
 
 if __name__ == "__main__":
     unittest.main()

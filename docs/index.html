@@ -311,6 +311,46 @@
         line-height: 1.5;
       }
 
+      .goal-tree-card {
+        padding: 22px;
+        margin-top: 18px;
+      }
+      .goal-tree-shell {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+      .goal-node {
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.03);
+      }
+      .goal-node-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .goal-node-head h4 {
+        margin: 0;
+        font-size: 16px;
+      }
+      .goal-node-meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .goal-node-children {
+        margin-top: 12px;
+        padding-left: 16px;
+        border-left: 2px solid rgba(125, 211, 252, 0.2);
+        display: grid;
+        gap: 12px;
+      }
+
       .footnote {
         margin-top: 16px;
         color: var(--muted);
@@ -319,10 +359,10 @@
       }
 
       @media (max-width: 980px) {
-        .grid-4, .grid-3, .grid-2, .artifact-grid, .metrics, .split { grid-template-columns: 1fr 1fr; }
+        .grid-4, .grid-3, .grid-2, .artifact-grid, .metrics, .split, .goal-node-meta { grid-template-columns: 1fr 1fr; }
       }
       @media (max-width: 720px) {
-        .grid-4, .grid-3, .grid-2, .artifact-grid, .metrics, .split { grid-template-columns: 1fr; }
+        .grid-4, .grid-3, .grid-2, .artifact-grid, .metrics, .split, .goal-node-meta { grid-template-columns: 1fr; }
         h1 { line-height: 1.02; }
       }
     </style>
@@ -336,6 +376,7 @@
         <div class="hero-actions">
           <a class="button primary" href="https://github.com/seankim-business/auto-refine">View GitHub repo</a>
           <a class="button" href="#examples">See proof examples</a>
+          <a class="button" href="#goal-trees">See goal trees</a>
         </div>
         <div class="proof-note" id="proof-note"></div>
       </section>
@@ -356,6 +397,12 @@
         <h2 class="section-title">Proof examples that show the mechanism clearly</h2>
         <p class="section-copy">These are deterministic local proof examples, not production benchmark claims. They are here to show the product behavior legibly: the artifact changes, the evaluator scores it, constraints block bad candidates, and the incumbent only advances on accepted improvements.</p>
         <div id="example-list"></div>
+      </section>
+
+      <section class="section" id="goal-trees">
+        <h2 class="section-title">Recursive goal trees</h2>
+        <p class="section-copy">Flat trial loops are useful, but larger goals are usually trees of hypotheses. auto-refine can decompose a root goal into sub-goals, run bounded evidence on leaf hypotheses, and automatically accept or reject branches.</p>
+        <div id="goal-tree-list"></div>
       </section>
 
       <section class="section footnote">
@@ -388,6 +435,11 @@
       function badge(decision) {
         const cls = decision === 'keep' ? 'keep' : decision === 'discard' ? 'discard' : 'baseline';
         return `<span class="badge ${cls}">${decision.toUpperCase()}</span>`;
+      }
+
+      function goalVerdictBadge(verdict) {
+        const cls = verdict === 'accepted' ? 'keep' : 'discard';
+        return `<span class="badge ${cls}">${verdict.toUpperCase()}</span>`;
       }
 
       function renderMetrics(metrics, primaryMetric) {
@@ -489,6 +541,61 @@
         `;
       }
 
+      function renderGoalNode(node) {
+        const metrics = [];
+        if (node.task_baseline_primary !== null && node.task_baseline_primary !== undefined) {
+          metrics.push(`<div class="metric-box"><strong>baseline</strong>${node.task_baseline_primary}</div>`);
+        }
+        if (node.task_best_primary !== null && node.task_best_primary !== undefined) {
+          metrics.push(`<div class="metric-box"><strong>best</strong>${node.task_best_primary}</div>`);
+        }
+        metrics.push(`<div class="metric-box"><strong>depth</strong>${node.depth}</div>`);
+        const taskPath = node.task_run_dir
+          ? `<div class="detail" style="margin-top: 8px;"><strong style="color: var(--text);">Task evidence:</strong> <code>${node.task_run_dir}</code></div>`
+          : '';
+        const children = node.children?.length
+          ? `<div class="goal-node-children">${node.children.map(renderGoalNode).join('')}</div>`
+          : '';
+        return `
+          <div class="goal-node">
+            <div class="goal-node-head">
+              <h4>${node.name}</h4>
+              ${goalVerdictBadge(node.verdict)}
+            </div>
+            <div class="detail"><strong style="color: var(--text);">Hypothesis:</strong> ${node.hypothesis}</div>
+            <div class="detail"><strong style="color: var(--text);">Reason:</strong> ${node.reason}</div>
+            <div class="goal-node-meta">${metrics.join('')}</div>
+            ${taskPath}
+            ${children}
+          </div>
+        `;
+      }
+
+      function renderGoalTree(tree) {
+        const counts = tree.nodeCounts || { total: 0, accepted: 0, rejected: 0 };
+        return `
+          <article class="card goal-tree-card">
+            <div class="example-head">
+              <div style="max-width: 760px;">
+                <div class="label">goal tree · recursive hypothesis optimization</div>
+                <h3 style="font-size: 32px; margin: 10px 0 10px;">${tree.title}</h3>
+                <p class="section-copy" style="margin-bottom: 8px;">${tree.problem}</p>
+                <div class="detail">${tree.whyItMatters}</div>
+                <div class="detail" style="margin-top: 8px;"><strong style="color: var(--text);">Generated from:</strong> <code>${tree.generatedFrom}</code></div>
+              </div>
+              <div class="hero-stat">
+                <div class="stat-card"><span class="label">Nodes</span><strong>${counts.total}</strong></div>
+                <div class="stat-card"><span class="label">Accepted</span><strong>${counts.accepted}</strong></div>
+                <div class="stat-card"><span class="label">Rejected</span><strong>${counts.rejected}</strong></div>
+              </div>
+            </div>
+            <div class="goal-tree-shell">
+              ${renderGoalNode(tree.root)}
+            </div>
+          </article>
+        `;
+      }
+
       async function main() {
         const res = await fetch('./demo-data.json');
         const data = await res.json();
@@ -498,6 +605,7 @@
         document.getElementById('opt-grid').innerHTML = data.whatGetsOptimized.map(renderInfoCard).join('');
         document.getElementById('decision-grid').innerHTML = data.decisionRules.map(renderDecisionCard).join('');
         document.getElementById('example-list').innerHTML = data.examples.map(renderExample).join('');
+        document.getElementById('goal-tree-list').innerHTML = (data.goalTrees || []).map(renderGoalTree).join('');
       }
 
       main().catch((err) => {

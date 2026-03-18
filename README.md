@@ -47,8 +47,9 @@ The demo now shows, explicitly:
 - the before/after artifact that wins
 - sample case-level behavior changes
 - which candidates get discarded and why
+- recursive goal trees with accepted / rejected hypotheses
 
-Current live examples are deterministic proof demos, labeled honestly as such. The published page data is generated from actual `summary.json` run outputs plus a thin narrative metadata layer.
+Current live examples are deterministic proof demos, labeled honestly as such. The published page data is generated from actual `summary.json` and `goal-tree-summary.json` run outputs plus a thin narrative metadata layer.
 
 ## Quick start
 

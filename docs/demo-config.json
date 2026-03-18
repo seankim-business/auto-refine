@@ -145,5 +145,14 @@
         }
       ]
     }
+  ],
+  "goalTrees": [
+    {
+      "id": "marketing-strategy-tree",
+      "summaryGlob": "runs/goal-trees/run-*/goal-tree-summary.json",
+      "title": "Visualize recursive goal decomposition",
+      "problem": "Flat optimization is useful, but it hides a more interesting product idea: large goals can be decomposed into falsifiable sub-goals and automatically accepted or rejected node by node.",
+      "whyItMatters": "This is where auto-refine starts to look like a structured research/strategy engine instead of a simple trial runner. Accepted descendants rescue good branches; rejected hypotheses die automatically."
+    }
   ]
 }
