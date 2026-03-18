@@ -1,0 +1,6 @@
+{
+  "bug_keywords": ["bug", "fails", "error"],
+  "enhancement_keywords": ["should", "support"],
+  "manual_review_keywords": [],
+  "default_route": "enhancement"
+}

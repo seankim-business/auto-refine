@@ -26,14 +26,17 @@ The same loop can optimize different artifact types without changing the engine:
 
 - **prompt artifact** → `examples/prompt_eval_toy/`
 - **workflow policy artifact** → `examples/routing_policy_toy/`
+- **public GitHub issue triage benchmark** → `examples/github_issue_triage_public/`
 - **repo-owned marketing artifact** → `self_tasks/marketing_copy/`
 - **hierarchical goal / hypothesis tree** → `goal_trees/marketing_strategy/`
 
-Both examples are:
+These examples are:
 - deterministic
-- local-only
+- local-only at runtime
 - constraint-aware
 - rollback-safe
+
+The new issue-triage example is benchmark-backed by public issue excerpts from `cli/cli`, stored locally with source URLs for reproducibility.
 
 ## Live demo
 
@@ -52,6 +55,7 @@ Current live examples are deterministic proof demos, labeled honestly as such. T
 ```bash
 python3 -m auto_refine run examples/prompt_eval_toy/task.json --iterations 4
 python3 -m auto_refine run examples/routing_policy_toy/task.json --iterations 4
+python3 -m auto_refine run examples/github_issue_triage_public/task.json --iterations 4
 python3 -m auto_refine run self_tasks/marketing_copy/task.json --iterations 4
 python3 -m auto_refine run-goal-tree goal_trees/marketing_strategy/tree.json
 python3 -m auto_refine resume --task self_tasks/marketing_copy/task.json --budget 8

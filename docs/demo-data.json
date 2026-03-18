@@ -2,7 +2,7 @@
   "site": {
     "title": "auto-refine demo",
     "tagline": "Optimize bounded artifacts against a trusted evaluator — and keep only the changes that survive cost, latency, safety, and hype constraints.",
-    "proofNote": "This page is generated from actual auto-refine run summaries plus a thin narrative metadata layer. The examples are still deterministic proof tasks, but the metrics, decisions, artifacts, and kept/discarded outcomes come from real runs."
+    "proofNote": "This page is generated from actual auto-refine run summaries plus a thin narrative metadata layer. Most examples are deterministic proof tasks, and the issue-triage benchmark is backed by public `cli/cli` issue excerpts with source URLs. The metrics, decisions, artifacts, and kept/discarded outcomes all come from real runs."
   },
   "whatGetsOptimized": [
     {
@@ -398,6 +398,183 @@
       "generatedFrom": "examples/routing_policy_toy/runs/auto-refine/run-20260316-210732/summary.json"
     },
     {
+      "id": "github-issue-triage-public",
+      "summaryGlob": "examples/github_issue_triage_public/runs/auto-refine/run-*/summary.json",
+      "title": "Optimize a public GitHub issue triage policy",
+      "artifactType": "triage policy",
+      "artifactPath": "policy.json",
+      "problem": "Toy examples prove the loop, but they do not show credibility on recognizably real inputs. This benchmark uses real public issue excerpts from `cli/cli` and optimizes a routing policy against expected routes.",
+      "objectiveSummary": "Maximize issue triage quality while keeping manual review rate <= 0.4, cost <= $0.02, and safety_failures == 0.",
+      "optimizedThing": "The engine edits `policy.json` — keyword rules for routing public issues into `bug`, `enhancement`, or `manual_review` — and scores the policy against a fixed local benchmark built from public `cli/cli` issues.",
+      "whyKept": "The winning candidate expands bug/enhancement keywords and adds an auth-sensitive manual review guard, improving routing quality while staying within manual-review and cost limits.",
+      "caseStudies": [
+        {
+          "label": "Auth-sensitive enterprise token issue",
+          "baselineBehavior": "The weak baseline policy treats it like a normal enhancement issue and misses the manual-review path.",
+          "bestBehavior": "The kept policy sends auth/token/trusted-host issues to manual review, eliminating the safety miss.",
+          "whyItMatters": "This makes the example feel like a real ops policy benchmark rather than a purely synthetic toy."
+        },
+        {
+          "label": "Over-escalation candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A broader candidate sent too many issues to manual review and was rejected on manual_review_rate and cost.",
+          "whyItMatters": "This shows the loop is balancing accuracy against operational throughput, not just maximizing one score blindly."
+        }
+      ],
+      "primaryMetric": "quality_score",
+      "direction": "maximize",
+      "baselineValue": 0.375,
+      "bestValue": 0.875,
+      "baselineArtifact": "{\n  \"bug_keywords\": [\"bug\", \"fails\", \"error\"],\n  \"enhancement_keywords\": [\"should\", \"support\"],\n  \"manual_review_keywords\": [],\n  \"default_route\": \"enhancement\"\n}\n",
+      "bestArtifact": "{\n  \"bug_keywords\": [\n    \"bug\",\n    \"fails\",\n    \"error\",\n    \"corrupt\",\n    \"failure\",\n    \"duplicate\",\n    \"rate limit\",\n    \"returns\"\n  ],\n  \"enhancement_keywords\": [\n    \"should\",\n    \"support\",\n    \"add\",\n    \"json\",\n    \"auto-select\",\n    \"emoji\",\n    \"prompting\"\n  ],\n  \"manual_review_keywords\": [\n    \"auth\",\n    \"authentication\",\n    \"token\",\n    \"trusted host\",\n    \"enterprise\"\n  ],\n  \"default_route\": \"enhancement\"\n}\n",
+      "incumbentProgression": [
+        0.375,
+        0.875,
+        0.875,
+        0.875,
+        0.875
+      ],
+      "records": [
+        {
+          "attempt": 0,
+          "phase": "baseline",
+          "name": "baseline",
+          "mutation": "baseline",
+          "metrics": {
+            "quality_score": 0.375,
+            "manual_review_rate": 0.0,
+            "cost_usd": 0.002,
+            "safety_failures": 1,
+            "num_issues": 8
+          },
+          "decision": "baseline",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "policy.json": "{\n  \"bug_keywords\": [\"bug\", \"fails\", \"error\"],\n  \"enhancement_keywords\": [\"should\", \"support\"],\n  \"manual_review_keywords\": [],\n  \"default_route\": \"enhancement\"\n}\n"
+          },
+          "proposer_exit_code": null,
+          "evaluator_exit_code": 0,
+          "proposer_log": null,
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/baseline-evaluator.log",
+          "incumbent_primary": null,
+          "candidate_primary": 0.375,
+          "error": null
+        },
+        {
+          "attempt": 1,
+          "phase": "trial",
+          "name": "attempt-1",
+          "mutation": "expand bug/enhancement keywords and add auth-sensitive manual review guard",
+          "metrics": {
+            "quality_score": 0.875,
+            "manual_review_rate": 0.25,
+            "cost_usd": 0.0049,
+            "safety_failures": 0,
+            "num_issues": 8
+          },
+          "decision": "keep",
+          "improved": true,
+          "constraint_failures": [],
+          "artifacts": {
+            "policy.json": "{\n  \"bug_keywords\": [\n    \"bug\",\n    \"fails\",\n    \"error\",\n    \"corrupt\",\n    \"failure\",\n    \"duplicate\",\n    \"rate limit\",\n    \"returns\"\n  ],\n  \"enhancement_keywords\": [\n    \"should\",\n    \"support\",\n    \"add\",\n    \"json\",\n    \"auto-select\",\n    \"emoji\",\n    \"prompting\"\n  ],\n  \"manual_review_keywords\": [\n    \"auth\",\n    \"authentication\",\n    \"token\",\n    \"trusted host\",\n    \"enterprise\"\n  ],\n  \"default_route\": \"enhancement\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-001-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-001-trial.log",
+          "incumbent_primary": 0.375,
+          "candidate_primary": 0.875,
+          "error": null
+        },
+        {
+          "attempt": 2,
+          "phase": "trial",
+          "name": "attempt-2",
+          "mutation": "over-escalate many issues to manual review",
+          "metrics": {
+            "quality_score": 0.125,
+            "manual_review_rate": 1.0,
+            "cost_usd": 0.012,
+            "safety_failures": 0,
+            "num_issues": 8
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "manual_review_rate <= 0.4 failed (got 1.0)"
+          ],
+          "artifacts": {
+            "policy.json": "{\n  \"bug_keywords\": [\n    \"bug\",\n    \"fails\",\n    \"error\",\n    \"corrupt\",\n    \"failure\",\n    \"duplicate\",\n    \"rate limit\",\n    \"returns\"\n  ],\n  \"enhancement_keywords\": [\n    \"should\",\n    \"support\",\n    \"add\",\n    \"json\",\n    \"auto-select\",\n    \"emoji\",\n    \"prompting\"\n  ],\n  \"manual_review_keywords\": [\n    \"gh\",\n    \"repo\",\n    \"pr\",\n    \"issue\",\n    \"auth\",\n    \"token\",\n    \"host\"\n  ],\n  \"default_route\": \"manual_review\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-002-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-002-trial.log",
+          "incumbent_primary": 0.875,
+          "candidate_primary": 0.125,
+          "error": null
+        },
+        {
+          "attempt": 3,
+          "phase": "trial",
+          "name": "attempt-3",
+          "mutation": "bug-heavy simplification",
+          "metrics": {
+            "quality_score": 0.5,
+            "manual_review_rate": 0.0,
+            "cost_usd": 0.003,
+            "safety_failures": 1,
+            "num_issues": 8
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "safety_failures == 0 failed (got 1.0)"
+          ],
+          "artifacts": {
+            "policy.json": "{\n  \"bug_keywords\": [\n    \"gh\",\n    \"repo\",\n    \"issue\",\n    \"fails\",\n    \"returns\",\n    \"status\"\n  ],\n  \"enhancement_keywords\": [],\n  \"manual_review_keywords\": [],\n  \"default_route\": \"bug\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-003-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-003-trial.log",
+          "incumbent_primary": 0.875,
+          "candidate_primary": 0.5,
+          "error": null
+        },
+        {
+          "attempt": 4,
+          "phase": "trial",
+          "name": "attempt-4",
+          "mutation": "strong classification but no manual review guard",
+          "metrics": {
+            "quality_score": 0.75,
+            "manual_review_rate": 0.0,
+            "cost_usd": 0.0024,
+            "safety_failures": 1,
+            "num_issues": 8
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [
+            "safety_failures == 0 failed (got 1.0)"
+          ],
+          "artifacts": {
+            "policy.json": "{\n  \"bug_keywords\": [\n    \"bug\",\n    \"fails\",\n    \"error\",\n    \"corrupt\",\n    \"failure\",\n    \"duplicate\",\n    \"rate limit\",\n    \"returns\"\n  ],\n  \"enhancement_keywords\": [\n    \"should\",\n    \"support\",\n    \"add\",\n    \"json\",\n    \"auto-select\",\n    \"emoji\",\n    \"prompting\",\n    \"authentication\",\n    \"token\"\n  ],\n  \"manual_review_keywords\": [],\n  \"default_route\": \"enhancement\"\n}\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-004-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/attempt-004-trial.log",
+          "incumbent_primary": 0.875,
+          "candidate_primary": 0.75,
+          "error": null
+        }
+      ],
+      "generatedFrom": "examples/github_issue_triage_public/runs/auto-refine/run-20260319-000805/summary.json"
+    },
+    {
       "id": "self-refine-marketing-copy",
       "summaryGlob": "runs/self-refine-marketing/run-*/summary.json",
       "title": "Optimize the repo’s own marketing copy",
@@ -428,6 +605,8 @@
       "baselineArtifact": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n",
       "bestArtifact": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n",
       "incumbentProgression": [
+        0.95,
+        0.95,
         0.95,
         0.95,
         0.95,
@@ -674,6 +853,58 @@
           "evaluator_exit_code": 0,
           "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-008-proposer.log",
           "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-008-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.95,
+          "error": null
+        },
+        {
+          "attempt": 9,
+          "phase": "trial",
+          "name": "attempt-9",
+          "mutation": "no-op variant for attempt 9",
+          "metrics": {
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
+            "hype_flags": 0,
+            "artifact_chars": 255
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-009-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-009-trial.log",
+          "incumbent_primary": 0.95,
+          "candidate_primary": 0.95,
+          "error": null
+        },
+        {
+          "attempt": 10,
+          "phase": "trial",
+          "name": "attempt-10",
+          "mutation": "no-op variant for attempt 10",
+          "metrics": {
+            "quality_score": 0.95,
+            "latency_ms": 1720,
+            "cost_usd": 0.0182,
+            "hype_flags": 0,
+            "artifact_chars": 255
+          },
+          "decision": "discard",
+          "improved": false,
+          "constraint_failures": [],
+          "artifacts": {
+            "marketing/hero.md": "auto-refine optimizes bounded artifacts like prompts, policies, and configs against a trusted evaluator. It keeps candidates that improve the target metric without breaking latency, cost, or safety constraints, and rolls back bad candidates automatically.\n"
+          },
+          "proposer_exit_code": 0,
+          "evaluator_exit_code": 0,
+          "proposer_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-010-proposer.log",
+          "evaluator_log": "/Users/sean/.openclaw/workspace/projects/auto-refine/runs/self-refine-marketing/run-20260317-092327/attempt-010-trial.log",
           "incumbent_primary": 0.95,
           "candidate_primary": 0.95,
           "error": null

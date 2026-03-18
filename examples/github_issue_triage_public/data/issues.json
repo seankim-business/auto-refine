@@ -1,0 +1,74 @@
+[
+  {
+    "id": "cli-12953",
+    "source_url": "https://github.com/cli/cli/issues/12953",
+    "repo": "cli/cli",
+    "title": "`gh auth login` creates duplicates entries in Keychain Access",
+    "body": "`gh auth login` creates duplicate macOS Keychain entries for the same service. This results in multiple Keychain entries and confusion for the stored token.",
+    "expected_route": "bug",
+    "sensitive": false
+  },
+  {
+    "id": "cli-12927",
+    "source_url": "https://github.com/cli/cli/issues/12927",
+    "repo": "cli/cli",
+    "title": "`gh repo sync` silently corrupts worktree when synced branch is checked out in a different worktree",
+    "body": "`gh repo sync` uses git update-ref and can silently corrupt a worktree when the synced branch is checked out elsewhere.",
+    "expected_route": "bug",
+    "sensitive": false
+  },
+  {
+    "id": "cli-12900",
+    "source_url": "https://github.com/cli/cli/issues/12900",
+    "repo": "cli/cli",
+    "title": "`gh repo list OWNER --visibility private` returns `internal` repos",
+    "body": "The command returns repositories with visibility internal even when private was requested, which breaks visibility management flows.",
+    "expected_route": "bug",
+    "sensitive": false
+  },
+  {
+    "id": "cli-12895",
+    "source_url": "https://github.com/cli/cli/issues/12895",
+    "repo": "cli/cli",
+    "title": "pr status counts cancelled runs as failures despite newer successful run",
+    "body": "Cancelled workflow runs are counted as failures in `gh pr status` even when a newer run for the same check has succeeded.",
+    "expected_route": "bug",
+    "sensitive": false
+  },
+  {
+    "id": "cli-12964",
+    "source_url": "https://github.com/cli/cli/issues/12964",
+    "repo": "cli/cli",
+    "title": "`gh pr merge`: auto-select the only allowed merge method instead of prompting",
+    "body": "When exactly one merge method is enabled, the CLI should automatically use that method instead of prompting interactively.",
+    "expected_route": "enhancement",
+    "sensitive": false
+  },
+  {
+    "id": "cli-12947",
+    "source_url": "https://github.com/cli/cli/issues/12947",
+    "repo": "cli/cli",
+    "title": "`gh agent-task view --log`: add --json support for structured agent logs",
+    "body": "There is no way to get structured output of the underlying agent execution. This requests JSON support for integrations.",
+    "expected_route": "enhancement",
+    "sensitive": false
+  },
+  {
+    "id": "cli-12939",
+    "source_url": "https://github.com/cli/cli/issues/12939",
+    "repo": "cli/cli",
+    "title": "Emoji's should be returned as the text if terminal host doesn't support them",
+    "body": "When the terminal host does not support emoji rendering, text fallbacks should be returned instead.",
+    "expected_route": "enhancement",
+    "sensitive": false
+  },
+  {
+    "id": "cli-12928",
+    "source_url": "https://github.com/cli/cli/issues/12928",
+    "repo": "cli/cli",
+    "title": "Env var to host trust mapping for token authentication",
+    "body": "Environment variable authentication has no concept of a trusted host for enterprise tokens, which can cause tokens to be sent to unexpected hosts.",
+    "expected_route": "manual_review",
+    "sensitive": true
+  }
+]

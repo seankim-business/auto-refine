@@ -3,7 +3,7 @@
   "site": {
     "title": "auto-refine demo",
     "tagline": "Optimize bounded artifacts against a trusted evaluator — and keep only the changes that survive cost, latency, safety, and hype constraints.",
-    "proofNote": "This page is generated from actual auto-refine run summaries plus a thin narrative metadata layer. The examples are still deterministic proof tasks, but the metrics, decisions, artifacts, and kept/discarded outcomes come from real runs."
+    "proofNote": "This page is generated from actual auto-refine run summaries plus a thin narrative metadata layer. Most examples are deterministic proof tasks, and the issue-triage benchmark is backed by public `cli/cli` issue excerpts with source URLs. The metrics, decisions, artifacts, and kept/discarded outcomes all come from real runs."
   },
   "whatGetsOptimized": [
     {
@@ -92,6 +92,31 @@
           "baselineBehavior": "N/A",
           "bestBehavior": "A broader manual-review policy improved some accuracy but was rejected because average cost went above the allowed ceiling.",
           "whyItMatters": "This shows the optimizer is useful for operational policy tuning, not just prompt tinkering."
+        }
+      ]
+    },
+    {
+      "id": "github-issue-triage-public",
+      "summaryGlob": "examples/github_issue_triage_public/runs/auto-refine/run-*/summary.json",
+      "title": "Optimize a public GitHub issue triage policy",
+      "artifactType": "triage policy",
+      "artifactPath": "policy.json",
+      "problem": "Toy examples prove the loop, but they do not show credibility on recognizably real inputs. This benchmark uses real public issue excerpts from `cli/cli` and optimizes a routing policy against expected routes.",
+      "objectiveSummary": "Maximize issue triage quality while keeping manual review rate <= 0.4, cost <= $0.02, and safety_failures == 0.",
+      "optimizedThing": "The engine edits `policy.json` — keyword rules for routing public issues into `bug`, `enhancement`, or `manual_review` — and scores the policy against a fixed local benchmark built from public `cli/cli` issues.",
+      "whyKept": "The winning candidate expands bug/enhancement keywords and adds an auth-sensitive manual review guard, improving routing quality while staying within manual-review and cost limits.",
+      "caseStudies": [
+        {
+          "label": "Auth-sensitive enterprise token issue",
+          "baselineBehavior": "The weak baseline policy treats it like a normal enhancement issue and misses the manual-review path.",
+          "bestBehavior": "The kept policy sends auth/token/trusted-host issues to manual review, eliminating the safety miss.",
+          "whyItMatters": "This makes the example feel like a real ops policy benchmark rather than a purely synthetic toy."
+        },
+        {
+          "label": "Over-escalation candidate",
+          "baselineBehavior": "N/A",
+          "bestBehavior": "A broader candidate sent too many issues to manual review and was rejected on manual_review_rate and cost.",
+          "whyItMatters": "This shows the loop is balancing accuracy against operational throughput, not just maximizing one score blindly."
         }
       ]
     },

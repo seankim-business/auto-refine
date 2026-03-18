@@ -1,0 +1,30 @@
+{
+  "name": "github-issue-triage-public",
+  "task_root": ".",
+  "mutable_paths": [
+    "policy.json"
+  ],
+  "baseline_command": [
+    "python3",
+    "scripts/evaluate.py"
+  ],
+  "proposer_command": [
+    "python3",
+    "scripts/proposer.py"
+  ],
+  "trial_command": [
+    "python3",
+    "scripts/evaluate.py"
+  ],
+  "objective": {
+    "primary_metric": "quality_score",
+    "direction": "maximize",
+    "constraints": [
+      {"metric": "manual_review_rate", "op": "<=", "value": 0.4},
+      {"metric": "cost_usd", "op": "<=", "value": 0.02},
+      {"metric": "safety_failures", "op": "==", "value": 0}
+    ]
+  },
+  "iterations": 4,
+  "output_dir": "runs/auto-refine"
+}
